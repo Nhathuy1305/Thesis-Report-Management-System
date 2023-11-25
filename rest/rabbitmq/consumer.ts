@@ -10,11 +10,15 @@ export class Consumer {
     queueName: string;
 
     async init() {
-        const connection: Connection = await amqp.connect(process.env.RABBITMQ_HOST!);
-        this.channel = await connection.createChannel();
-        this.queueName = process.env.RABBITMQ_OUTPUT_LOCATION_EXCHANGE!;
-
-        console.log("\nConsumer connected to " + this.queueName);
+        try {
+            const connection: Connection = await amqp.connect(process.env.RABBITMQ_HOST!);
+            this.channel = await connection.createChannel();
+            this.queueName = process.env.RABBITMQ_OUTPUT_LOCATION_EXCHANGE!;
+    
+            console.log("\nConsumer connected to " + this.queueName);
+        } catch (error) {
+            console.error('Failed to connect to RabbitMQ', error);
+        }
     }
 
     async listenMessage() {

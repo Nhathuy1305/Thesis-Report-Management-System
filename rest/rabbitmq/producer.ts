@@ -8,11 +8,15 @@ export class Producer {
     exchangeName: string;
 
     async init() {
-        const connection: Connection = await amqp.connect(process.env.RABBITMQ_HOST!);
-        this.channel = await connection.createChannel();
-        this.exchangeName = process.env.RABBITMQ_FILE_LOCATION_EXCHANGE!;
-
-        console.log("\nProducer connected to " + this.exchangeName);
+        try {
+            const connection: Connection = await amqp.connect(process.env.RABBITMQ_HOST!);
+            this.channel = await connection.createChannel();
+            this.exchangeName = process.env.RABBITMQ_FILE_LOCATION_EXCHANGE!;
+    
+            console.log("\nProducer connected to " + this.exchangeName);
+        } catch (error) {
+            console.error('Failed to connect to RabbitMQ', error);
+        }
     }
 
     async publishMessage(message: string) {
