@@ -14,10 +14,21 @@ class Consumer:
         self.port = os.environ.get("RABBITMQ_PORT")
         self.user = os.environ.get("RABBITMQ_USER")
         self.password = os.environ.get("RABBITMQ_PASSWORD")
+
+        # Set the heartbeat interval (in seconds)
+        self.heartbeat_interval = 10  # Example: 10 minutes
+
         self.connection = self.connect()
 
     def connect(self):
-        parameters = pika.ConnectionParameters(self.host, self.port, "/", pika.PlainCredentials(self.user, self.password))
+        # Include the heartbeat parameter in the connection parameters
+        parameters = pika.ConnectionParameters(
+            self.host,
+            self.port,
+            "/",
+            pika.PlainCredentials(self.user, self.password),
+            heartbeat=self.heartbeat_interval
+        )
         return pika.BlockingConnection(parameters)
     
     def consume_message(self):
@@ -36,7 +47,6 @@ class Consumer:
             output_file(uploaded_file_location)
 
         channel.basic_consume(queue=self.file_location_queue,
-                                auto_ack=True,
-                                on_message_callback=callback)
+                              auto_ack=True,
+                              on_message_callback=callback)
         channel.start_consuming()
-
