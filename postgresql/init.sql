@@ -142,18 +142,22 @@ INSERT INTO public.user_type(id, type_name) VALUES (1, 'Admin');
 INSERT INTO public.user_type(id, type_name) VALUES (2, 'Instructor');
 INSERT INTO public.user_type(id, type_name) VALUES (3, 'Student');
 
-INSERT INTO public.deadline (deadline) VALUES ('2023-09-30 00:00:00+07');
+INSERT INTO public.deadline (deadline) VALUES ('2024-01-30 00:00:00+07');
 
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITADMIN01', 'Admin', '123456789', 1);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITADMIN01', 'Admin', '@IU_Ad#20/24', 1);
 
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19114', 'Ung Thu Ha', '123456789', 3);
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19107', 'Dinh Bao Duy', '123456789', 3);
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19028', 'Do Quang Minh', '123456789', 3);
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19141', 'Nguyen Anh Khoa', '123456789', 3);
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19022', 'Huynh Hoc Lam', '123456789', 3);
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19044', 'Bui Minh Quang', '123456789', 3);
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19095', 'Ha Tien Dat', '123456789', 3);
-INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU19243', 'Vo Anh Viet', '123456789', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU20043', 'Dang Nhat Huy', '13052002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU20354', 'Pham Minh Vu', '10112002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU20134', 'Trinh Duc Bao', '06092002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU20163', 'Nguyen Luan Cong Bang', '07112002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITDSIU20090', 'Nguyen Hoang Anh Tu', '13062002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITDSIU20031', 'Nguyen Quang Dieu', '29052002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU20111', 'Bui Thi Cam Van', '08122002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITDSIU20085', 'Pham Le Duc Thinh', '07012002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITDSIU20032', 'Duong Tran Nhat Minh', '29102002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITDSIU20056', 'Nguyen Thanh Binh', '01062002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU20252', 'Phan Ngoc Dong Minh', '15102002', 3);
+INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITIU20338', 'Tran Thi Ngoc Tu', '20112002', 3);
 
 INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITEACH001', 'Tran Thanh Tung', '123456789', 2);
 INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITEACH002', 'Nguyen Van Sinh', '123456789', 2);
@@ -179,11 +183,15 @@ INSERT INTO public.instructor (instructor_id) VALUES ('ITITEACH009');
 INSERT INTO public.instructor (instructor_id) VALUES ('ITITEACH010');
 INSERT INTO public.instructor (instructor_id) VALUES ('ITITEACH011');
 
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19114', 'ITITEACH001');
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19107', 'ITITEACH002');
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19028', 'ITITEACH007');
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19141', 'ITITEACH007');
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19022', 'ITITEACH004');
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19044', 'ITITEACH001');
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19095', 'ITITEACH001');
-INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU19243', 'ITITEACH001');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU20043', 'ITITEACH001');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU20354', 'ITITEACH002');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU20134', 'ITITEACH003');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU20163', 'ITITEACH004');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITDSIU20090', 'ITITEACH005');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITDSIU20031', 'ITITEACH006');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU20111', 'ITITEACH007');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITDSIU20085', 'ITITEACH008');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITDSIU20032', 'ITITEACH009');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITDSIU20056', 'ITITEACH010');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU20252', 'ITITEACH011');
+INSERT INTO public.student (student_id, instructor_id) VALUES ('ITITIU20338', 'ITITEACH006');
