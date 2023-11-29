@@ -87,9 +87,9 @@ services:
     environment:
       APP_NAME: "chapter_title"
       RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_USER: "daniel"
+      RABBITMQ_USER: "guest"
       RABBITMS_PORT: "5672"
-      RABBITMQ_PASSWORD: "123456"
+      RABBITMQ_PASSWORD: "guest"
       DATABASE_NAME: "chapter_title"
       DATABASE_USER: "postgres"
       DATABASE_PASSWORD: "123456"
@@ -116,9 +116,9 @@ services:
     environment:
       APP_NAME: "format_check"
       RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_USER: "daniel"
+      RABBITMQ_USER: "guest"
       RABBITMS_PORT: "5672"
-      RABBITMQ_PASSWORD: "123456"
+      RABBITMQ_PASSWORD: "guest"
       DATABASE_NAME: "format_check"
       DATABASE_USER: "postgres"
       DATABASE_PASSWORD: "123456"
@@ -145,9 +145,9 @@ services:
     environment:
       APP_NAME: "page_count"
       RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_USER: "daniel"
+      RABBITMQ_USER: "guest"
       RABBITMS_PORT: "5672"
-      RABBITMQ_PASSWORD: "123456"
+      RABBITMQ_PASSWORD: "guest"
       DATABASE_NAME: "page_count"
       DATABASE_USER: "postgres"
       DATABASE_PASSWORD: "123456"
@@ -174,9 +174,9 @@ services:
     environment:
       APP_NAME: "table_of_content"
       RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_USER: "daniel"
+      RABBITMQ_USER: "guest"
       RABBITMS_PORT: "5672"
-      RABBITMQ_PASSWORD: "123456"
+      RABBITMQ_PASSWORD: "guest"
       DATABASE_NAME: "table_of_content"
       DATABASE_USER: "postgres"
       DATABASE_PASSWORD: "123456"
@@ -203,9 +203,9 @@ services:
     environment:
       APP_NAME: "word_frequency"
       RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_USER: "daniel"
+      RABBITMQ_USER: "guest"
       RABBITMS_PORT: "5672"
-      RABBITMQ_PASSWORD: "123456"
+      RABBITMQ_PASSWORD: "guest"
       DATABASE_NAME: "word_frequency"
       DATABASE_USER: "postgres"
       DATABASE_PASSWORD: "123456"
@@ -232,9 +232,9 @@ services:
     environment:
       APP_NAME: "chapter_summarization"
       RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_USER: "daniel"
+      RABBITMQ_USER: "guest"
       RABBITMS_PORT: "5672"
-      RABBITMQ_PASSWORD: "123456"
+      RABBITMQ_PASSWORD: "guest"
       DATABASE_NAME: "chapter_summarization"
       DATABASE_USER: "postgres"
       DATABASE_PASSWORD: "123456"
@@ -247,6 +247,9 @@ services:
     container_name: "rabbitmq"
     build: rabbitmq/.
     image: "rabbitmq:latest"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
     ports:
         - "5672:5672"
     restart: always
@@ -255,3 +258,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
+networks:
+  default:
+    driver: bridge
