@@ -15,7 +15,7 @@ class Producer:
         self.password = os.environ.get("RABBITMQ_PASSWORD")
 
         # Set the heartbeat interval (in seconds)
-        self.heartbeat_interval = 10  # Example: 10 minutes
+        self.heartbeat_interval = 3000
 
         self.connection = self.connect()
 
