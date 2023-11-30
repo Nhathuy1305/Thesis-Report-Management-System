@@ -109,7 +109,7 @@ pipeline {
     post {
         // Clean after build
         always {
-            sh "docker-compose -f ./docker-compose.yml down"
+            // sh "docker-compose -f ./docker-compose.yml down"
             cleanWs()
         }
     }
