@@ -87,7 +87,7 @@ pipeline {
                 '''
                 sh 'sleep 20'
 
-                sh 'docker exec -i daniel-postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f postgresql/init.sql'
+                sh 'docker exec -i daniel-postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /docker-entrypoint-initdb.d/init.sql'
             }
         }
 
