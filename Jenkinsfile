@@ -9,7 +9,7 @@ pipeline {
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = credentials('postgres-password')
         POSTGRES_DB = 'thesis_upload'
-        DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
+        DOCKER_CREDENTIALS_ID = credentials('docker-credentials-id')
     }
 
     stages {
@@ -37,7 +37,7 @@ pipeline {
                     for (service in services) {
                         // Build and push Docker image for each service
                         docker.build("daniel135dang/${service}:${BUILD_NUMBER}", "./${service}")
-                        docker.withRegistry('https://daniel135dang/', DOCKER_CREDENTIALS_ID) {
+                        docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                             docker.image("daniel135dang/${service}:${BUILD_NUMBER}").push()
                         }
                     }
