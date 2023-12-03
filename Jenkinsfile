@@ -83,9 +83,18 @@ pipeline {
                         'word_frequency',
                     ]
 
+                    sh 'docker network create dev-network || true'
+
                     for (service in services) {
+                        // Remove existing container with the same name
+                        sh "docker rm -f ${service}-dev || true"
+
                         // Deploy each service to DEV environment in separate Docker containers
-                        sh "docker run -d --name ${service}-dev --env RABBITMQ_HOST=${RABBITMQ_HOST} --env RABBITMQ_USER=${RABBITMQ_USER} --env RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} daniel135dang/${service}:${BUILD_NUMBER}"
+                        if (service == 'postgresql') {
+                            sh "docker run -d --name ${service}-dev --network dev-network --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} -v postgresql-data:/var/lib/postgresql/data daniel135dang/${service}:${BUILD_NUMBER}"
+                        } else {
+                            sh "docker run -d --name ${service}-dev --network dev-network --env RABBITMQ_HOST=postgresql-dev --env RABBITMQ_USER=${RABBITMQ_USER} --env RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} daniel135dang/${service}:${BUILD_NUMBER}"
+                        }
                     }
                 }
             }
