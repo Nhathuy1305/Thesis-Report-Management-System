@@ -87,7 +87,7 @@ pipeline {
                 '''
                 sh 'sleep 20'
 
-                sh 'docker exec -i daniel-postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f ./postgresql/init.sql'
+                sh 'docker exec -i daniel-postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f postgresql/init.sql'
             }
         }
 
@@ -107,7 +107,7 @@ pipeline {
 
                     for (service in services) {
                         // Deploy each service to DEV environment in separate Docker containers
-                        sh "docker run -d --name ${service}-dev --env RABBITMQ_HOST=${RABBITMQ_HOST} --env RABBITMQ_USER=${RABBITMQ_USER} --env RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} your-registry/${service}:${BUILD_NUMBER}"
+                        sh "docker run -d --name ${service}-dev --env RABBITMQ_HOST=${RABBITMQ_HOST} --env RABBITMQ_USER=${RABBITMQ_USER} --env RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} daniel135dang/${service}:${BUILD_NUMBER}"
                     }
                 }
             }
