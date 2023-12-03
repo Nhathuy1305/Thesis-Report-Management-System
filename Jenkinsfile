@@ -23,10 +23,11 @@ pipeline {
             steps {
                 script {
                     def services = [
+                        'postgresql',
                         'rest',
+                        'client',
                         'chapter_summarization',
                         'chapter_title',
-                        'client',
                         'format_check',
                         'page_count',
                         'table_of_content',
@@ -67,38 +68,15 @@ pipeline {
             }
         }
 
-        stage('Deploy PostgreSQL to DEV') {
-            steps {
-                echo 'Deploying PostgreSQL and cleaning up'
-                sh 'docker image pull postgres:latest'
-                sh 'docker network create dev || echo "Network already exists"'
-                sh 'docker container stop daniel-postgres || echo "Container does not exist"'
-                sh 'echo y | docker container prune'
-                sh 'docker volume rm daniel-postgres-data || echo "No volume to remove"'
-
-                sh '''
-                    docker run --name daniel-postgres --rm \
-                    --network dev \
-                    -v daniel-postgres-data:/var/lib/postgresql/data \
-                    -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
-                    -e POSTGRES_USER=${POSTGRES_USER} \
-                    -e POSTGRES_DB=${POSTGRES_DB} \
-                    -d postgres:latest
-                '''
-                sh 'sleep 20'
-
-                sh 'docker exec -i daniel-postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /docker-entrypoint-initdb.d/init.sql'
-            }
-        }
-
         stage('Deploy Microservices to DEV') {
             steps {
                 script {
                     def services = [
+                        'postgresql',
                         'rest',
+                        'client',
                         'chapter_summarization',
                         'chapter_title',
-                        'client',
                         'format_check',
                         'page_count',
                         'table_of_content',
