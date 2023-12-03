@@ -24,7 +24,6 @@ pipeline {
             steps {
                 script {
                     def services = [
-                        'rest',
                         'chapter_summarization',
                         'chapter_title',
                         'client',
@@ -32,6 +31,7 @@ pipeline {
                         'page_count',
                         'table_of_content',
                         'word_frequency',
+                        'rest',
                     ]
 
                     for (service in services) {
