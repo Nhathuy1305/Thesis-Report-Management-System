@@ -95,6 +95,7 @@ pipeline {
             steps {
                 script {
                     def services = [
+                        'postgresql',
                         'rest',
                         'chapter_summarization',
                         'chapter_title',
@@ -109,8 +110,6 @@ pipeline {
                         sh "docker stop ${service}-dev"
                         sh "docker rm ${service}-dev"
                     }
-
-                    sh "docker-compose -f docker-compose.dev.yml down"
                 }
             }
         }
