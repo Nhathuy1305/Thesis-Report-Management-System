@@ -13,7 +13,11 @@ const Login = () => {
     const { user, login } = useContext(AuthContext);
     
     const submit = (e) => {
-        if (!userId) {
+        e.preventDefault();
+        if (!userId && !password) {
+            setWarning("Please enter your user ID & password");
+        }
+        else if (!userId) {
             setWarning("Please enter your user ID");
         }
         else if (!password) {
@@ -47,6 +51,12 @@ const Login = () => {
         }
     }, [user]);
 
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            submit(e);
+        }
+    };
+
     return (
         <div className="login">
             <div className="hero">
@@ -69,6 +79,7 @@ const Login = () => {
                     <input 
                         className="form-input" 
                         onChange={(e) => setUserId(e.target.value)}
+                        onKeyPress={handleKeyPress}
                         placeholder="Enter your user ID" />
                 </div>
                 <div className="form-section">
@@ -79,6 +90,7 @@ const Login = () => {
                         className="form-input" 
                         type="password"
                         onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={handleKeyPress}
                         placeholder="Enter your password" />
                 </div>
                 <div className="warning">

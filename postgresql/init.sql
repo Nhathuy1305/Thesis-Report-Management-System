@@ -76,6 +76,18 @@ CREATE TABLE public.output (
     uploaded_time timestamp with time zone NOT NULL
 );
 
+DROP DATABASE IF EXISTS citation;
+CREATE DATABASE citation;
+GRANT ALL PRIVILEGES ON DATABASE citation TO postgres;
+\connect citation;
+CREATE TABLE public.output (
+    id uuid NOT NULL PRIMARY KEY,
+    thesis_id character varying(255) NOT NULL,
+    file_name character varying(255) NOT NULL,
+    file_location character varying(255) NOT NULL,
+    result character varying(55),
+    uploaded_time timestamp with time zone NOT NULL
+);
 
 DROP DATABASE IF EXISTS thesis_upload;
 CREATE DATABASE thesis_upload;
