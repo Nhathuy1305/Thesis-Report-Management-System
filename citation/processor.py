@@ -2,130 +2,105 @@ import os
 import re
 import uuid
 import timeit
-import pdfplumber
 
 from dotenv import load_dotenv
 from datetime import datetime
 from database import Database
 from producer import Producer
+from refextract import extract_references_from_file
 from file_manager import get_file_from_bucket, remove_file_from_dir, write_to_bucket
 
 load_dotenv()
 
 def extract_citations(uploaded_file_location):
-    citations = []
-    references_page = -1
-    
     try: 
-        with pdfplumber.open(uploaded_file_location) as pdf:
-            chapter_regex = re.compile(r'References|REFERENCES|REFERENCE|Reference', re.I)
-            citation_regex = re.compile(r'\[\d+\].*?\d{4}', re.MULTILINE | re.DOTALL)
-
-            for i in range(len(pdf.pages)):
-                page = pdf.pages[i]
-                text = page.extract_text()
-
-                text = text.replace('\n', ' ')
-
-                if chapter_regex.search(text):
-                    references_page = i  
-
-            for i in range(references_page, len(pdf.pages)):
-                page = pdf.pages[i]
-                text = page.extract_text()
-
-                text = text.replace('\n', ' ')
-                
-                individual_citations = re.findall(citation_regex, text)
-
-                for citation in individual_citations:
-                    citations.append({'citation': citation, 'page': i})
-
-        return citations
+        citations = extract_references_from_file(uploaded_file_location)
+        
+        citations = merge_citations(citations)
+        
+        unique_citations = {}
+        
+        for citation in citations:
+            raw_ref = citation['raw_ref'][0]
+            if raw_ref not in unique_citations:
+                unique_citations[raw_ref] = citation
+            else:
+                pass
+        
+        unique_citations_list = list(unique_citations.values())
+        
+        return unique_citations_list
+    
     except Exception as e:
-        print(f"An error occurred 1: {e}")
-        return citations
+        print(f"An error occurred: {e}")
+        return []
+
+
+def merge_citations(citations):
+
+    merged_citations = []
+
+    for citation in citations:
+        raw_ref = citation['raw_ref'][0]
+
+        ieee_pattern = re.compile(r'^\[\d+\]')  
+        apa_pattern = re.compile(r'.*\(.*\d{4}\).*') 
+
+        is_new_ieee_citation = ieee_pattern.search(raw_ref)
+        is_new_apa_citation = apa_pattern.search(raw_ref)
+
+        if not merged_citations or is_new_ieee_citation or is_new_apa_citation:
+            merged_citations.append(citation)
+        else:
+            merged_citations[-1]['raw_ref'][0] += ' ' + raw_ref.strip()
+            if 'misc' in citation:
+                if 'misc' in merged_citations[-1]:
+                    merged_citations[-1]['misc'][0] += ' ' + citation['misc'][0].strip()
+                else:
+                    merged_citations[-1]['misc'] = citation['misc']
+
+    return merged_citations
 
 
 def check_citations(citations):
-    checked_citations = []
 
-    apa_regex = re.compile(r"(([\w\s-]+),\s([\w\s-]+)\.\s\((\d{4})\).+)")
-    mla_regex = re.compile(r"(([\w\s-]+),\s([\w\s-]+)\.\s.+\d+\.)")
-    chicago_regex = re.compile(r"(([\w\s-]+),\s\"(.+?)\",\s([\w\s-]+),\s(\d{4})\.)")
-    ieee_regex = re.compile(r'^\[(\d+)\] ([\w\s,]+), “(.+?)” in (\d{4}) ([\w\s]+): ([A-Za-z]+), ([A-Za-z]+), (\d{4}), pp. (\d+–\d+)\.\s?doi: (\d{2}\.\d{4}/\w+$)')
-
+    citation_styles = []
 
     for citation in citations:
-        citation_text = citation['citation']
-        citation_type = 'Unknown'
-        authors = 'Unknown'
-        year = 'Unknown'
-        
-        match_apa = apa_regex.match(citation_text)
-        match_mla = mla_regex.match(citation_text)
-        match_chicago = chicago_regex.match(citation_text)
-        match_ieee = ieee_regex.match(citation_text)
-
-        if match_apa:
-            citation_type = 'APA'
-            authors = f"{match_apa.group(2)}, {match_apa.group(3)}"
-            year = match_apa.group(4)
-        elif match_mla:
-            citation_type = 'MLA'
-            authors = f"{match_mla.group(2)}, {match_mla.group(3)}"
-        elif match_chicago:
-            citation_type = 'Chicago'
-            authors = match_chicago.group(2)
-            year = match_chicago.group(5)
-        elif match_ieee:
-            citation_type = 'IEEE'
-            authors = match_ieee.group(3)
-            year = match_ieee.group(5)
-
-        checked_citations.append({
-            'citation': citation_text, 
-            'type': citation_type, 
-            'authors': authors, 
-            'year': year, 
-            'page': citation['page']
-        })
-
-    return checked_citations
+        if is_website_apa_style(citation):
+            citation_styles.append(("APA Style (Website)", citation['raw_ref'][0]))
+        elif is_website_mla_style(citation):
+            citation_styles.append(("MLA Style (Website)", citation['raw_ref'][0]))
+        elif is_website_ieee_style(citation):
+            citation_styles.append(("IEEE Style (Website)", citation['raw_ref'][0]))
+        elif is_apa_style(citation):
+            citation_styles.append(("APA Style", citation['raw_ref'][0]))
+        elif is_mla_style(citation):
+            citation_styles.append(("MLA Style", citation['raw_ref'][0]))
+        elif is_ieee_style(citation):
+            citation_styles.append(("IEEE Style", citation['raw_ref'][0]))
+        else:
+            citation_styles.append(("Unknown Style", citation['raw_ref'][0]))
+    return citation_styles
 
 
-def process_citations(checked_citations):
-    output = ""
-    count_true_citations = 0
+def is_apa_style(citation):
+    return re.match(r".*\(.*\d{4}\).*", citation['raw_ref'][0])
 
-    print("Checked Citations:", checked_citations)
+def is_website_apa_style(citation):
+    return re.match(r".*\(.*\d{4}\).*(?:http|https)://.*", citation['raw_ref'][0])
 
-    correct_citations = [citation for citation in checked_citations if citation['type'] != "Unknown"]
-    incorrect_citations = [citation for citation in checked_citations if citation['type'] == "Unknown"]
+def is_mla_style(citation):
+    return re.match(r".*\. \d{4}\.$", citation['raw_ref'][0])
 
-    if correct_citations:
-        output += "Correct Citations:\n"
-        for citation in correct_citations:
-            count_true_citations += 1
-            output += f"{citation['citation']} (Type: {citation[1]})\n"
-    else:
-        output += "No correct citations found.\n"
-    
-    if incorrect_citations:
-        output += "\nCitations with issues:\n"
-        for citation in incorrect_citations:
-            output += f"{citation['citation']} (Format Unknown)\n"
-    else:
-        output += "No issues found in citations.\n"
+def is_website_mla_style(citation):
+    return re.match(r".*\d{4},.*(?:http|https)://.*", citation['raw_ref'][0])
 
-    # Calculate grade
-    grade = int(round((count_true_citations / len(checked_citations)) * 100))
-    result = "Pass" if grade >= 50 else "Fail" 
+def is_ieee_style(citation):
+    return re.match(r".*\[\d+\].*(?:\s+\[Online\]\s+Available:\s+\S+)?", citation['raw_ref'][0])
 
-    output += f"\nGrade: {grade}%\n"
-    output += f"Service Result: {result}\n"
-
-    return output, result
+def is_website_ieee_style(citation):
+    return re.match(r".*\[\d+\].*(?:http|https)://.*", citation['raw_ref'][0])
 
 
 def insert_database(event_id, thesis_id, file_location, result):
@@ -152,11 +127,53 @@ def output_file(cloud_file_location):
     producer.publish_status(event_id, thesis_id, service_type, "Processing")
 
     try:
-        citations = extract_apa_citations(uploaded_file_location)
+        citations = extract_citations(uploaded_file_location)
         checked_citations = check_citations(citations)
-        output, result = process_citations(checked_citations)
         
-        output_file_location = write_to_bucket(file_name, output)
+        try:
+            output += checked_citations
+        except Exception as e:
+            print(f"An error occurred while writing to the output file: {e}")
+            
+        output = "List of Citations:\n"
+        count_true_citations = 0
+
+        checked_citations = [{'citation': type, 'type': citation} for citation, type in checked_citations]
+
+        correct_citations = [citation for citation in checked_citations if citation['type'] != "Unknown"]
+        incorrect_citations = [citation for citation in checked_citations if citation['type'] == "Unknown"]
+
+        if correct_citations:
+            output += "\nCorrect Citations:\n"
+            for citation in correct_citations:
+                count_true_citations += 1
+                output += f"{citation['citation']} (Type: {citation['type']})\n"
+        else:
+            output += "No correct citations found.\n"
+
+        if incorrect_citations:
+            output += "\nCitations with issues:\n"
+            for citation in incorrect_citations:
+                output += f"{citation['citation']} (Format Unknown)\n"
+        else:
+            output += "No issues found in citations.\n"
+
+        if checked_citations:
+            # Calculate grade
+            grade = int(round((count_true_citations / len(checked_citations)) * 100))
+            result = "Pass" if grade >= 50 else "Fail"
+        else:
+            grade = 0
+            result = "Fail - No citations found"
+
+        output += f"\nGrade: {grade}%\n"
+        output += f"Service Result: {result}\n"
+        
+        try:
+            output_file_location = write_to_bucket(file_name, output)
+        except Exception as e:
+            print(f"An error occurred while uploading the file to the bucket: {e}")
+            
         print("\nTime for " + os.environ.get("APP_NAME") + " to process file " + file_name + " is " + str(timeit.default_timer() - start_time) + "\n", flush=True)
 
         print("finished uploading to bucket for " + os.environ.get("APP_NAME"), flush=True)
@@ -169,8 +186,4 @@ def output_file(cloud_file_location):
 
         print("Processing complete in " + os.environ.get("APP_NAME"), flush=True)
     except Exception as e:
-        print(f"An error occurred: {e}")
-        if isinstance(event_id, str) and isinstance(thesis_id, str) and isinstance(service_type, str):
-            producer.publish_status(event_id, thesis_id, service_type, "Service Error")
-        else:
-            print("Unable to publish status due to invalid argument types.")
+        producer.publish_status(event_id, thesis_id, service_type, "Service error")

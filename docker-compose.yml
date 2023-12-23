@@ -272,6 +272,35 @@ services:
       GOOGLE_CLOUD_STORAGE_BUCKET: "thesis_file_bucket"
       GOOGLE_APPLICATION_CREDENTIALS: "/app/google_credentials.json"
       ROOT_DIR: "/app"
+  table_figure_detection:
+    container_name: "table_figure_detection"
+    build: table_figure_detection/.
+    image: "table_figure_detection:latest"
+    restart: "always"
+    ports:
+      - "5008:5008"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./table_figure_detection/temp:/app/table_figure_detection/temp
+      - ./google_credentials.json:/app/google_credentials.json
+    environment:
+      APP_NAME: "table_figure_detection"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_USER: "guest"
+      RABBITMS_PORT: "5672"
+      RABBITMQ_PASSWORD: "guest"
+      DATABASE_NAME: "table_figure_detection"
+      DATABASE_USER: "postgres"
+      DATABASE_PASSWORD: "123456"
+      DATABASE_HOST: "postgresql"
+      DATABASE_PORT: "5432"
+      GOOGLE_CLOUD_STORAGE_BUCKET: "thesis_file_bucket"
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/google_credentials.json"
+      ROOT_DIR: "/app"
   rabbitmq:
     container_name: "rabbitmq"
     build: rabbitmq/.

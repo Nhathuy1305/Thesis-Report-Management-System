@@ -89,6 +89,19 @@ CREATE TABLE public.output (
     uploaded_time timestamp with time zone NOT NULL
 );
 
+DROP DATABASE IF EXISTS table_figure_detection;
+CREATE DATABASE table_figure_detection;
+GRANT ALL PRIVILEGES ON DATABASE table_figure_detection TO postgres;
+\connect table_figure_detection;
+CREATE TABLE public.output (
+    id uuid NOT NULL PRIMARY KEY,
+    thesis_id character varying(255) NOT NULL,
+    file_name character varying(255) NOT NULL,
+    file_location character varying(255) NOT NULL,
+    result character varying(55),
+    uploaded_time timestamp with time zone NOT NULL
+);
+
 DROP DATABASE IF EXISTS thesis_upload;
 CREATE DATABASE thesis_upload;
 GRANT ALL PRIVILEGES ON DATABASE thesis_upload TO postgres;
