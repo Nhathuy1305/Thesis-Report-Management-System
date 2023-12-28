@@ -88,6 +88,42 @@ def extract_table_titles(uploaded_file_location, ignore_pages_with=['contents', 
     return table_titles
 
 
+def find_figure_mentions(uploaded_file_location, figure_titles):
+    with pdfplumber.open(uploaded_file_location) as pdf:
+        figure_mentions = {title: [] for title in figure_titles} 
+        
+        for i, page in enumerate(pdf.pages, start=1):  # Start page numbering at 1
+            text = page.extract_text()
+            if not text:
+                continue
+
+            for title in figure_titles:
+                pattern = re.compile(re.escape(title), re.IGNORECASE)
+                matches = pattern.findall(text)
+                if len(matches) > 0:
+                    figure_mentions[title].append((len(matches), i))  # Append mention count and page number
+
+    return figure_mentions
+
+
+def find_table_mentions(uploaded_file_location, table_titles):
+    with pdfplumber.open(uploaded_file_location) as pdf:
+        table_mentions = {title: [] for title in table_titles} 
+        
+        for i, page in enumerate(pdf.pages, start=1):  # Start page numbering at 1
+            text = page.extract_text()
+            if not text:
+                continue
+
+            for title in table_titles:
+                pattern = re.compile(re.escape(title), re.IGNORECASE)
+                matches = pattern.findall(text)
+                if len(matches) > 0:
+                    table_mentions[title].append((len(matches), i))  # Append mention count and page number
+
+    return table_mentions
+
+
 def insert_database(event_id, thesis_id, file_location, result):
     file_name = os.path.basename(file_location)
     uploaded_time = datetime.utcnow()
@@ -112,11 +148,45 @@ def output_file(cloud_file_location):
     producer.publish_status(event_id, thesis_id, service_type, "Processing")
 
     try:
-        titles = extract_figure_titles(uploaded_file_location)
-        
-        output = '\n'.join(titles)
-        result = "Grade"
+        table_titles = extract_table_titles(uploaded_file_location)
 
+        figure_titles = extract_figure_titles(uploaded_file_location)
+
+        table_mentions = find_table_mentions(uploaded_file_location, table_titles)
+
+        figure_mentions = find_figure_mentions(uploaded_file_location, figure_titles)
+
+        total_items = len(figure_mentions) + len(table_mentions)
+        mentioned_items = 0
+        
+        output = ""
+        output += "Tables mentioned:\n\n"
+        
+        for figure, mentions in figure_mentions.items():
+            if mentions:
+                mentioned_items += 1
+            _, slide = mentions[-1] if mentions else (None, None)
+            output += (f"{figure} \nMentioned on slide {slide}\n\n")
+
+        output += "\nFigures mentioned:\n\n"
+
+        for table, mentions in table_mentions.items():
+            if mentions:
+                mentioned_items += 1
+            _, slide = mentions[-1] if mentions else (None, None)
+            output += (f"{table} \nMentioned on slide {slide}\n\n")
+
+        if total_items == 0:
+            grade = 0
+            result = "Fail"
+            output += "\nNo Figures or Tables found\n"
+        else:
+            grade = int(round((mentioned_items / total_items) * 100))
+            result = "Pass" if grade >= 50 else "Fail"
+            output += f"\nGrade: {grade}\n"
+            
+        print("finished processing for " + os.environ.get("APP_NAME"), flush=True   )
+        
         output_file_location = write_to_bucket(file_name, output)
         
         print("\nTime for " + os.environ.get("APP_NAME") + " to process file " + file_name + " is " + str(timeit.default_timer() - start_time) + "\n", flush=True)

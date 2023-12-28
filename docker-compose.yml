@@ -53,7 +53,7 @@ services:
         RABBITMQ_FILE_LOCATION_EXCHANGE: "uploaded_file_location"
         RABBITMQ_OUTPUT_LOCATION_EXCHANGE: "output_location"
         ROOT_DIR: "/app"
-        SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content,citation"
+        SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content,citation,table_figure_detection"
         GUIDELINES_LIST: "chapter_title,format_check,page_count"
         GOOGLE_APPLICATION_CREDENTIALS: "/run/secrets/gcp-credentials"
         GOOGLE_CLOUD_STORAGE_BUCKET: "thesis_file_bucket"
@@ -67,7 +67,7 @@ services:
     volumes:
       - /app/node_modules
     environment:
-      REACT_APP_SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content,citation"
+      REACT_APP_SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content,citation,table_figure_detection"
       REACT_APP_BACKEND_HOST: "http://localhost:5000/"
   chapter_title:
     container_name: "chapter_title"

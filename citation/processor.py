@@ -134,7 +134,8 @@ def output_file(cloud_file_location):
             output += checked_citations
         except Exception as e:
             print(f"An error occurred while writing to the output file: {e}")
-            
+        
+        output = ""
         output = "List of Citations:\n"
         count_true_citations = 0
 
@@ -144,7 +145,7 @@ def output_file(cloud_file_location):
         incorrect_citations = [citation for citation in checked_citations if citation['type'] == "Unknown"]
 
         if correct_citations:
-            output += "\nCorrect Citations:\n"
+            output += "Correct Citations:\n"
             for citation in correct_citations:
                 count_true_citations += 1
                 output += f"{citation['citation']} (Type: {citation['type']})\n"
@@ -164,7 +165,7 @@ def output_file(cloud_file_location):
             result = "Pass" if grade >= 50 else "Fail"
         else:
             grade = 0
-            result = "Fail - No citations found"
+            result = "Fail"
 
         output += f"\nGrade: {grade}%\n"
         output += f"Service Result: {result}\n"
