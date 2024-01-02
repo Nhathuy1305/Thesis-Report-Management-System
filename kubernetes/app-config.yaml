@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: services-config
+data:
+  RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USER: "guest"
+  RABBITMQ_PASSWORD: "guest"
+  POSTGRES_HOST: "postgresql"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "123456"
+  POSTGRES_DB: "thesis_upload"
+  GOOGLE_CLOUD_STORAGE_BUCKET: "thesis_file_bucket"
+  GOOGLE_APPLICATION_CREDENTIALS: "/app/google_credentials.json"
+  ROOT_DIR: "/app"

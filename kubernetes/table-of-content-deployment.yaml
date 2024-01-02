@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: table-of-content-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: table-of-content
+  template:
+    metadata:
+      labels:
+        app: table-of-content
+    spec:
+      containers:
+      - name: table-of-content
+        image: daniel135dang/table_of_content:8
+        ports:
+        - containerPort: 5004
+        env:
+          - name: RABBITMQ_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_HOST
+          
+          - name: RABBITMQ_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_PORT
+
+          - name: RABBITMQ_USER
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_USER
+
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_PASSWORD
+
+          - name: POSTGRES_NAME
+            value: "table_of_content"
+
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_HOST
+
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_PORT
+
+          - name: POSTGRES_USER
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_USER
+
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_PASSWORD
+
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_DB
+                
+          - name: GOOGLE_CLOUD_STORAGE_BUCKET
+            value: "thesis_file_bucket"
+
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: "/app/google_credentials.json"
+            
+          - name: ROOT_DIR
+            value: "/app"
+
+        volumeMounts:
+        - name: google-credentials
+          mountPath: /app/google_credentials.json
+          subPath: google_credentials.json
+      
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: google-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: table-of-content-service
+spec:
+  selector:
+    app: table-of-content
+  ports:
+    - name: table-of-content
+      protocol: TCP
+      port: 5004
+      targetPort: 5004

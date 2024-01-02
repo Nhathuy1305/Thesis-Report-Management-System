@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-backend
+  labels:
+    app: rest-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rest-backend
+  template:
+    metadata:
+      labels:
+        app: rest-backend
+    spec:
+      containers:
+      - name: rest-backend
+        image: daniel135dang/rest
+        ports:
+        - containerPort: 3000
+        env:
+          - name: RABBITMQ_HOST
+            value: rabbitmq
+          - name: RABBITMQ_PORT
+            value: "5672"
+          - name: RABBITMQ_USER
+            valueFrom:
+              secretKeyRef:
+                name: rabbitmq-secret
+                key: rabbitmq-username
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: rabbitmq-secret
+                key: rabbitmq-password
+          - name: POSTGRES_HOST
+            value: postgresql
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres-username
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres-password
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres-db

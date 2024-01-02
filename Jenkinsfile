@@ -36,9 +36,9 @@ pipeline {
 
                     for (service in services) {
                         // Build and push Docker image for each service
-                        docker.build("daniel135dang/${service}:${BUILD_NUMBER}", "./${service}")
+                        docker.build("daniel135dang/${service}:latest", "./${service}")
                         withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
-                            docker.image("daniel135dang/${service}:${BUILD_NUMBER}").push()
+                            docker.image("daniel135dang/${service}:latest").push()
                         }
                     }
                 }
@@ -90,9 +90,9 @@ pipeline {
                         sh "docker rm -f ${service}-dev || true"
                         // Deploy each service to DEV environment in separate Docker containers
                         if (service == 'postgresql') {
-                            sh "docker run -d --name ${service}-dev --network dev-network --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} -v postgresql-data:/var/lib/postgresql/data daniel135dang/${service}:${BUILD_NUMBER}"
+                            sh "docker run -d --name ${service}-dev --network dev-network --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} -v postgresql-data:/var/lib/postgresql/data daniel135dang/${service}:latest"
                         } else {
-                            sh "docker run -d --name ${service}-dev --network dev-network --env RABBITMQ_HOST=${RABBITMQ_HOST} --env RABBITMQ_USER=${RABBITMQ_USER} --env RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} daniel135dang/${service}:${BUILD_NUMBER}"
+                            sh "docker run -d --name ${service}-dev --network dev-network --env RABBITMQ_HOST=${RABBITMQ_HOST} --env RABBITMQ_USER=${RABBITMQ_USER} --env RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} --env POSTGRES_USER=${POSTGRES_USER} --env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} --env POSTGRES_DB=${POSTGRES_DB} daniel135dang/${service}:latest"
                         }
                     }
                 }

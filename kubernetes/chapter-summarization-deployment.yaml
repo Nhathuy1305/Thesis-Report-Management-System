@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chapter-summarization-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chapter-summarization
+  template:
+    metadata:
+      labels:
+        app: chapter-summarization
+    spec:
+      containers:
+      - name: chapter-summarization
+        image: daniel135dang/chapter_summarization:8
+        ports:
+        - containerPort: 5006
+        env:
+          - name: RABBITMQ_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_HOST
+          
+          - name: RABBITMQ_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_PORT
+
+          - name: RABBITMQ_USER
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_USER
+
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: RABBITMQ_PASSWORD
+
+          - name: POSTGRES_NAME
+            value: "chapter_summarization"
+
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_HOST
+
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_PORT
+
+          - name: POSTGRES_USER
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_USER
+
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_PASSWORD
+
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_DB
+                
+          - name: GOOGLE_CLOUD_STORAGE_BUCKET
+            value: "thesis_file_bucket"
+
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: "/app/google_credentials.json"
+            
+          - name: ROOT_DIR
+            value: "/app"
+
+        volumeMounts:
+        - name: google-credentials
+          mountPath: /app/google_credentials.json
+          subPath: google_credentials.json
+      
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: google-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chapter-summarization-service
+spec:
+  selector:
+    app: chapter-summarization
+  ports:
+    - name: chapter-summarization
+      protocol: TCP
+      port: 5006
+      targetPort: 5006
