@@ -5,7 +5,7 @@ metadata:
   labels:
     app: client-frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: client-frontend
@@ -15,10 +15,13 @@ spec:
         app: client-frontend
     spec:
       containers:
-      - name: client-frontend
-        image: daniel135dang/client 
+      - name: client
+        image: daniel135dang/client:latest
         ports:
-        - containerPort: 80
+        - containerPort: 3000
+        envFrom:
+          - configMapRef:
+              name: app-config
 ---
 apiVersion: v1
 kind: Service
@@ -30,5 +33,5 @@ spec:
     app: client-frontend
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 3000
+      targetPort: 3000

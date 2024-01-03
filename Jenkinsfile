@@ -32,6 +32,8 @@ pipeline {
                         'page_count',
                         'table_of_content',
                         'word_frequency',
+                        'citation',
+                        'table_figure_detection',
                     ]
 
                     for (service in services) {
@@ -81,6 +83,8 @@ pipeline {
                         'page_count',
                         'table_of_content',
                         'word_frequency',
+                        'citation',
+                        'table_figure_detection',
                     ]
 
                     sh 'docker network create dev-network || true'
@@ -112,6 +116,8 @@ pipeline {
                         'page_count',
                         'table_of_content',
                         'word_frequency',
+                        'citation',
+                        'table_figure_detection',
                     ]
 
                     for (service in services) {
