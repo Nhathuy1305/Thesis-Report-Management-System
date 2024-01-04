@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rabbitmq-publish
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: rabbitmq-client
+        image: daniel135dang/chapter-title-publisher
+        env:
+          - name: QUEUE_LENGTH
+            value: "500"
+          - name: RABBITMQ_HOST
+            value: "rabbitmq"
+          - name: RABBITMQ_PORT
+            value: "5672"
+          - name: RABBITMQ_USER
+            value: "guest"
+          - name: RABBITMQ_PASSWORD
+            value: "guest"

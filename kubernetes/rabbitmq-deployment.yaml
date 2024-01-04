@@ -4,6 +4,8 @@ metadata:
   name: rabbitmq
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: rabbitmq
@@ -14,11 +16,13 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: rabbitmq:3-management
+          image: rabbitmq
           ports:
-            - containerPort: 15672
             - containerPort: 5672
           env:
+            - name: RABBITMQ_NODENAME
+              value: k8s-thesis
+
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
                 configMapKeyRef:
@@ -30,6 +34,10 @@ spec:
                 configMapKeyRef:
                   name: services-config
                   key: RABBITMQ_PASSWORD
+      volumes:
+        - name: config
+          configMap:
+            name: services-config   
 ---
 apiVersion: v1
 kind: Service
@@ -39,11 +47,4 @@ spec:
   selector:
     app: rabbitmq
   ports:
-    - name: http
-      protocol: TCP
-      port: 15672
-      targetPort: 15672
-    - name: amqp
-      protocol: TCP
-      port: 5672
-      targetPort: 5672
+    - port: 5672
