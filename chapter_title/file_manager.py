@@ -65,7 +65,7 @@ def remove_file_from_dir(file_path):
         for i in range(10):
             try:
                 os.remove(file_path)
-            except WindowsError:
+            except OSError:
                 time.sleep(0.1)
             else:
                 print("removed file at " + file_path, flush=True) 

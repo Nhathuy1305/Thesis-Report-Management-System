@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citation-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: citation
+  template:
+    metadata:
+      labels:
+        app: citation
+    spec:
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: google-credentials
+      containers:
+      - name: citation
+        image: daniel135dang/citation:latest
+        ports:
+        - containerPort: 5007
+        env:
+          - name: APP_NAME
+            value: "citation"
+
+          - name: POSTGRES_NAME
+            value: "citation"               
+        
+        envFrom:
+          - configMapRef:
+              name: services-config
+
+        volumeMounts:
+        - name: google-credentials
+          mountPath: /app/google_credentials.json
+          subPath: google_credentials.json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: citation-service
+spec:
+  selector:
+    app: citation
+  ports:
+    - name: citation
+      protocol: TCP
+      port: 5007
+      targetPort: 5007

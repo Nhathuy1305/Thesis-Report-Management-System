@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-backend
+  labels:
+    app: rest-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest-backend
+  template:
+    metadata:
+      labels:
+        app: rest-backend
+    spec:
+      containers:
+      - name: rest-backend
+        image: daniel135dang/rest:latest
+        ports:
+        - containerPort: 5000
+        env:
+          - name: PORT
+            value: "5000"
+            
+          - name: APP_NAME
+            value: "rest"
+
+          - name: HOST
+            value: "rest-service"
+
+          - name: RABBITMQ_HOST
+            value: "amqp://rabbitmq:5672"
+
+          - name: RABBITMQ_FILE_LOCATION_EXCHANGE
+            value: "uploaded_file_location"
+
+          - name: RABBITMQ_OUTPUT_LOCATION_EXCHANGE
+            value: "output_location"
+
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_HOST
+
+          - name: POSTGRES_USER
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_USER
+
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_PASSWORD
+
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: POSTGRES_DB
+          
+          - name: ROOT_DIR
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: ROOT_DIR
+
+          - name: SERVICE_LIST
+            valueFrom:
+              configMapKeyRef:
+                name: app-config
+                key: SERVICE_LIST
+
+          - name: GUIDELINES_LIST
+            value: "chapter_title,format_check,page_count"
+
+          - name: GOOGLE_CLOUD_STORAGE_BUCKET
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: GOOGLE_CLOUD_STORAGE_BUCKET
+              
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            valueFrom:
+              configMapKeyRef:
+                name: services-config
+                key: GOOGLE_APPLICATION_CREDENTIALS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-service
+spec:
+  selector:
+    app: rest-service
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

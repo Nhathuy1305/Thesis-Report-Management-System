@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: word-frequency-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: word-frequency
+  template:
+    metadata:
+      labels:
+        app: word-frequency
+    spec:
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: google-credentials
+      containers:
+      - name: word-frequency
+        image: daniel135dang/word_frequency:latest
+        ports:
+        - containerPort: 5005
+        env:
+          - name: APP_NAME
+            value: "word_frequency"
+
+          - name: POSTGRES_NAME
+            value: "word_frequency"               
+        
+        envFrom:
+          - configMapRef:
+              name: services-config
+
+        volumeMounts:
+        - name: google-credentials
+          mountPath: /app/google_credentials.json
+          subPath: google_credentials.json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: word-frequency-service
+spec:
+  selector:
+    app: word-frequency
+  ports:
+    - name: word-frequency
+      protocol: TCP
+      port: 5005
+      targetPort: 5005

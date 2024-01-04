@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: table-of-content-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: table-of-content
+  template:
+    metadata:
+      labels:
+        app: table-of-content
+    spec:
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: google-credentials
+      containers:
+      - name: table-of-content
+        image: daniel135dang/table_of_content:latest
+        ports:
+        - containerPort: 5004
+        env:
+          - name: APP_NAME
+            value: "table_of_content"
+
+          - name: POSTGRES_NAME
+            value: "table_of_content"               
+        
+        envFrom:
+          - configMapRef:
+              name: services-config
+
+        volumeMounts:
+        - name: google-credentials
+          mountPath: /app/google_credentials.json
+          subPath: google_credentials.json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: table-of-content-service
+spec:
+  selector:
+    app: table-of-content
+  ports:
+    - name: table-of-content
+      protocol: TCP
+      port: 5004
+      targetPort: 5004

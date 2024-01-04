@@ -53,7 +53,7 @@ services:
         RABBITMQ_FILE_LOCATION_EXCHANGE: "uploaded_file_location"
         RABBITMQ_OUTPUT_LOCATION_EXCHANGE: "output_location"
         ROOT_DIR: "/app"
-        SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content"
+        SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content,citation,table_figure_detection"
         GUIDELINES_LIST: "chapter_title,format_check,page_count"
         GOOGLE_APPLICATION_CREDENTIALS: "/run/secrets/gcp-credentials"
         GOOGLE_CLOUD_STORAGE_BUCKET: "thesis_file_bucket"
@@ -67,7 +67,7 @@ services:
     volumes:
       - /app/node_modules
     environment:
-      REACT_APP_SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content"
+      REACT_APP_SERVICE_LIST: "word_frequency,chapter_title,format_check,chapter_summarization,page_count,table_of_content,citation,table_figure_detection"
       REACT_APP_BACKEND_HOST: "http://localhost:5000/"
   chapter_title:
     container_name: "chapter_title"
@@ -236,6 +236,64 @@ services:
       RABBITMS_PORT: "5672"
       RABBITMQ_PASSWORD: "guest"
       DATABASE_NAME: "chapter_summarization"
+      DATABASE_USER: "postgres"
+      DATABASE_PASSWORD: "123456"
+      DATABASE_HOST: "postgresql"
+      DATABASE_PORT: "5432"
+      GOOGLE_CLOUD_STORAGE_BUCKET: "thesis_file_bucket"
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/google_credentials.json"
+      ROOT_DIR: "/app"
+  citation:
+    container_name: "citation"
+    build: citation/.
+    image: "citation:latest"
+    restart: "always"
+    ports:
+      - "5007:5007"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./citation/temp:/app/citation/temp
+      - ./google_credentials.json:/app/google_credentials.json
+    environment:
+      APP_NAME: "citation"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_USER: "guest"
+      RABBITMS_PORT: "5672"
+      RABBITMQ_PASSWORD: "guest"
+      DATABASE_NAME: "citation"
+      DATABASE_USER: "postgres"
+      DATABASE_PASSWORD: "123456"
+      DATABASE_HOST: "postgresql"
+      DATABASE_PORT: "5432"
+      GOOGLE_CLOUD_STORAGE_BUCKET: "thesis_file_bucket"
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/google_credentials.json"
+      ROOT_DIR: "/app"
+  table_figure_detection:
+    container_name: "table_figure_detection"
+    build: table_figure_detection/.
+    image: "table_figure_detection:latest"
+    restart: "always"
+    ports:
+      - "5008:5008"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./table_figure_detection/temp:/app/table_figure_detection/temp
+      - ./google_credentials.json:/app/google_credentials.json
+    environment:
+      APP_NAME: "table_figure_detection"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_USER: "guest"
+      RABBITMS_PORT: "5672"
+      RABBITMQ_PASSWORD: "guest"
+      DATABASE_NAME: "table_figure_detection"
       DATABASE_USER: "postgres"
       DATABASE_PASSWORD: "123456"
       DATABASE_HOST: "postgresql"
