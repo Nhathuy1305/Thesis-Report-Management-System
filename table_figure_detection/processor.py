@@ -159,8 +159,7 @@ def output_file(cloud_file_location):
         total_items = len(figure_mentions) + len(table_mentions)
         mentioned_items = 0
         
-        output = ""
-        output += "Tables mentioned:\n\n"
+        output = "Tables mentioned:\n\n"
         
         for figure, mentions in figure_mentions.items():
             if mentions:
@@ -184,6 +183,7 @@ def output_file(cloud_file_location):
             grade = int(round((mentioned_items / total_items) * 100))
             result = "Pass" if grade >= 50 else "Fail"
             output += f"\nGrade: {grade}\n"
+            output += f"Service Result: {result}\n"
             
         print("finished processing for " + os.environ.get("APP_NAME"), flush=True   )
         
