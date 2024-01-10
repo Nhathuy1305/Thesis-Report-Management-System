@@ -2,11 +2,6 @@ pipeline {
 
     agent {label 'Jenkins-Agent'}
 
-    tools {
-        jdk 'Java17'
-        maven 'Maven3'
-    }
-
     environment {
         RABBITMQ_HOST = 'daniel-rabbitmq'
         RABBITMQ_USER = 'guest'
@@ -74,11 +69,12 @@ pipeline {
 
         stage("SonarQube Analysis"){
             steps {
-	            script {
-		            withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
-                        sh 'mvn sonar:sonar'
-		            }
-	            }
+                echo 'Analizing with SonarQube'
+                sh 'sonar-scanner \
+                    -Dsonar.projectKey=thesis-sonarqube-135 \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://13.229.61.237:9000 \
+                    -Dsonar.login=sqp_e4f9da40348a5f590889bc190dddf16ff2b53a53'
             }
         }
 
