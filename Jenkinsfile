@@ -28,6 +28,8 @@ pipeline {
 
         stage('Build and Test') {
             steps {
+                sh 'sudo apt-get update && sudo apt-get install -y python3-pip'
+
                 script {
                     def python_services = [
                         'chapter_summarization',
