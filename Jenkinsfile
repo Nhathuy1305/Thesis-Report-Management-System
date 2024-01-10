@@ -2,6 +2,11 @@ pipeline {
 
     agent {label 'Jenkins-Agent'}
 
+    tools {
+        jdk 'Java17'
+        maven 'Maven3'
+    }
+
     environment {
         RABBITMQ_HOST = 'daniel-rabbitmq'
         RABBITMQ_USER = 'guest'
@@ -27,7 +32,7 @@ pipeline {
         }
 
         ///// Dang co loi, khong tim thay file requirements.txt
-        
+
         // stage('Build and Test') {
         //     steps {
         //         sh 'sudo apt-get update && sudo apt-get install -y python3-pip'
