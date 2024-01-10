@@ -70,12 +70,14 @@ pipeline {
         stage("SonarQube Analysis"){
             steps {
                 script {
-                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
-                        sh 'sonar-scanner \
-                            -Dsonar.projectKey=thesis-sonarqube-135 \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=http://13.229.61.237:9000 \
-                            -Dsonar.login=sqp_e4f9da40348a5f590889bc190dddf16ff2b53a53'
+                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') {
+                        withEnv(["PATH+SONAR=${tool 'SonarQube Scanner 4.6.2.2472'}/bin"]) {
+                            sh 'sonar-scanner \
+                                -Dsonar.projectKey=thesis-sonarqube-135 \
+                                -Dsonar.sources=. \
+                                -Dsonar.host.url=http://13.229.61.237:9000 \
+                                -Dsonar.login=sqp_e4f9da40348a5f590889bc190dddf16ff2b53a53'
+                        }
                     }
                 }
             }
