@@ -2,11 +2,6 @@ pipeline {
 
     agent {label 'Jenkins-Agent'}
 
-    tools {
-        jdk 'Java17'
-        maven 'Maven3'
-    }
-
     environment {
         RABBITMQ_HOST = 'daniel-rabbitmq'
         RABBITMQ_USER = 'guest'
@@ -14,6 +9,7 @@ pipeline {
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = credentials('postgres-password')
         POSTGRES_DB = 'thesis_upload'
+        SONARQUBE_SCANNER_HOME = tool 'SonarQubeScanner_4.0'
     }
 
     stages {
@@ -35,7 +31,7 @@ pipeline {
             steps {
 	            script {
 		            withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
-                        sh "mvn sonar:sonar"
+                        sh "${env.SONARQUBE_SCANNER_HOME}/bin/sonar-scanner"
 		            }
 	            }	
             }
