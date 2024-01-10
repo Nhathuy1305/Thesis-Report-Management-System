@@ -1,6 +1,6 @@
 pipeline {
 
-    agent any
+    agent {label 'Jenkins-Agent'}
 
     environment {
         RABBITMQ_HOST = 'daniel-rabbitmq'
@@ -12,11 +12,37 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+
+        stage('Cleanup Workspace') {
             steps {
-                // Get the latest code from source control
-                checkout scm
+                cleanWs()
             }
+        }
+
+        stage('Checkout from SCM') {
+            steps {
+                git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System.git'
+                // checkout scm
+            }
+        }
+
+        stage("SonarQube Analysis"){
+            steps {
+	            script {
+		            withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
+                        sh "mvn sonar:sonar"
+		            }
+	            }	
+            }
+        }
+
+        stage("Quality Gate"){
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonarqube-token'
+                }	
+            }
+
         }
 
         stage('Packaging/Pushing Docker Images') {
