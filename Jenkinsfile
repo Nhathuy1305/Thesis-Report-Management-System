@@ -2,6 +2,11 @@ pipeline {
 
     agent {label 'Jenkins-Agent'}
 
+    tools {
+        jdk 'Java17'
+        maven 'Maven3'
+    }
+
     environment {
         RABBITMQ_HOST = 'daniel-rabbitmq'
         RABBITMQ_USER = 'guest'
