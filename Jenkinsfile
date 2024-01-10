@@ -127,8 +127,7 @@ pipeline {
                     ]
 
                     for (service in services) {
-                        sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/root/ aquasec/trivy:0.18.3 image --severity HIGH,CRITICAL daniel135dang/${service}:latest"
-                    }
+                        sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v \${PWD}:/root/ aquasec/trivy:0.18.3 image --severity HIGH,CRITICAL daniel135dang/${service}:latest"                    }
                 }
             }
         }
