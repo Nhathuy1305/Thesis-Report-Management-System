@@ -9,7 +9,7 @@ pipeline {
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = credentials('postgres-password')
         POSTGRES_DB = 'thesis_upload'
-        SONARQUBE_SCANNER_HOME = tool 'SonarQubeScanner_4.0'
+        SONARQUBE_SCANNER_HOME = tool 'sonarqube-scanner'
     }
 
     stages {
