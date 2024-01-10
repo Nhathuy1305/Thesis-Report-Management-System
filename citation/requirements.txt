@@ -1,5 +1,5 @@
 pika
 psycopg2
+refextract
 python-dotenv
 google-cloud-storage
-refextract

@@ -126,19 +126,18 @@ def output_file(cloud_file_location):
     uploaded_file_location = get_file_from_bucket(cloud_file_location)
     producer.publish_status(event_id, thesis_id, service_type, "Processing")
 
+    output = "List of Citations:\n"
+    count_true_citations = 0
+    
     try:
         citations = extract_citations(uploaded_file_location)
         checked_citations = check_citations(citations)
         
         try:
-            output += checked_citations
+            output += ', '.join(checked_citations)
         except Exception as e:
             print(f"An error occurred while writing to the output file: {e}")
         
-        output = ""
-        output = "List of Citations:\n"
-        count_true_citations = 0
-
         checked_citations = [{'citation': type, 'type': citation} for citation, type in checked_citations]
 
         correct_citations = [citation for citation in checked_citations if citation['type'] != "Unknown"]
@@ -179,7 +178,7 @@ def output_file(cloud_file_location):
 
         print("finished uploading to bucket for " + os.environ.get("APP_NAME"), flush=True)
 
-        remove_file_from_dir(uploaded_file_location)
+        # remove_file_from_dir(uploaded_file_location)
         
         insert_database(event_id, thesis_id, output_file_location, result)
 

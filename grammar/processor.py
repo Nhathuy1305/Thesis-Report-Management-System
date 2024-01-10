@@ -3,6 +3,7 @@ import re
 import uuid
 import timeit
 import pdfplumber
+import language_tool_python
 
 from dotenv import load_dotenv
 from datetime import datetime
@@ -12,8 +13,41 @@ from file_manager import get_file_from_bucket, remove_file_from_dir, write_to_bu
 
 load_dotenv()
 
+def check_grammar(uploaded_file_location):
+    try:
+        tool = language_tool_python.LanguageTool('en-US')
+        
+        with pdfplumber.open(uploaded_file_location) as pdf:
+            full_text = ''
+            for page in pdf.pages:
+                full_text += page.extract_text() + "\n"
+                
+        matches = tool.check(full_text)
+        
+        return matches
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return []
+    
 
+def process_printable_text(uploaded_file_location):
+    matches = check_grammar(uploaded_file_location)
 
+    # Iterate over the matches and print out the details
+    for match in matches:
+        print(f"Rule ID: {match.ruleId}")
+        print(f"Message: {match.message}")
+        print(f"Replacements: {', '.join(match.replacements)}")
+        print(f"Offset in Context: {match.offsetInContext}")
+        print(f"Context: {match.context}")
+        print(f"Offset: {match.offset}")
+        print(f"Error Length: {match.errorLength}")
+        print(f"Category: {match.category}")
+        print(f"Rule Issue Type: {match.ruleIssueType}")
+        print(f"Sentence: {match.sentence}")
+        print("\n")
+        
 
 def insert_database(event_id, thesis_id, file_location, result):
     file_name = os.path.basename(file_location)
