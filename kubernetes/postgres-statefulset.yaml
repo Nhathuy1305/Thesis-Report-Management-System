@@ -15,21 +15,15 @@ spec:
       labels:
         app: postgresql
     spec:
-      initContainers:
-        - name: clean-data-dir
-          image: busybox
-          command: ['sh', '-c', 'mkdir -p /var/lib/postgresql/data/pgdata && chown -R 999:999 /var/lib/postgresql/data/pgdata && chmod -R 700 /var/lib/postgresql/data/pgdata && rm -rf /var/lib/postgresql/data/pgdata/*']
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: postgres-data
       containers:
         - name: postgresql
           image: postgres:11
+          command: ["postgres", "-c", "config_file=/etc/postgresql.conf"]
           ports:
             - containerPort: 5432
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data/pdata
-              name: postgres-data
+          volumes:
+            - ./postgresql.conf:/etc/postgresql.conf
+            - ./pg-data:/var/lib/postgresql/data
           env:
             - name: POSTGRES_DB
               valueFrom:
@@ -49,8 +43,8 @@ spec:
                   name: services-config
                   key: POSTGRES_PASSWORD
 
-            - name: PGDATA
-              value: /var/lib/postgresql/data/pdata
+            # - name: PGDATA
+            #   value: /var/lib/postgresql/data/pgdata/
 
   volumeClaimTemplates:
     - metadata:
