@@ -3,13 +3,15 @@ pipeline {
     agent {label 'Jenkins-Agent'}
 
     environment {
+        RELEASE_VERSION = '1.0.0'
+        IMAGE_TAG = "${RELEASE_VERSION}-${env.BUILD_NUMBER}"
         RABBITMQ_HOST = 'daniel-rabbitmq'
         RABBITMQ_USER = 'guest'
         RABBITMQ_PASSWORD = credentials('rabbitmq-password')
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = credentials('postgres-password')
         POSTGRES_DB = 'thesis_upload'
-        SONARQUBE_SCANNER_HOME = tool 'sonarqube-scanner'
+        JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
     }
 
     stages {
@@ -22,7 +24,7 @@ pipeline {
 
         stage('Checkout from SCM') {
             steps {
-                git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System.git'
+                git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System'
             }
         }
 
@@ -67,31 +69,7 @@ pipeline {
         //     }
         // }
 
-        // stage("SonarQube Analysis"){
-        //     steps {
-        //         script {
-        //             withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') {
-        //                 withEnv(["PATH+SONAR=${tool 'SonarQube Scanner 4.6.2.2472'}/bin"]) {
-        //                     sh 'sonar-scanner \
-        //                         -Dsonar.projectKey=thesis-sonarqube-135 \
-        //                         -Dsonar.sources=. \
-        //                         -Dsonar.host.url=http://13.229.61.237:9000 \
-        //                         -Dsonar.login=sqp_e4f9da40348a5f590889bc190dddf16ff2b53a53'
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage("Quality Gate"){
-        //     steps {
-        //         script {
-        //             waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonarqube-token'
-        //         }	
-        //     }
-        // }
-
-        stage('Building and Pushing Docker Images') {
+        stage('Build & Push Docker Images') {
             steps {
                 script {
                     def services = [
@@ -110,8 +88,9 @@ pipeline {
 
                     for (service in services) {
                         // Build and push Docker image for each service
-                        docker.build("daniel135dang/${service}:latest", "./${service}")
+                        docker.build("daniel135dang/${service}", "./${service}")
                         withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
+                            docker.image("daniel135dang/${service}:${IMAGE_TAG}").push()
                             docker.image("daniel135dang/${service}:latest").push()
                         }
                     }
@@ -137,7 +116,8 @@ pipeline {
                     ]
 
                     for (service in services) {
-                        sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v \${PWD}:/root/ aquasec/trivy:0.18.3 image --severity HIGH,CRITICAL daniel135dang/${service}:latest"                    }
+                        sh ("docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image daniel135dang/${service}:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table")
+                    }
                 }
             }
         }
@@ -198,7 +178,7 @@ pipeline {
         //     }
         // }
      
-        stage('Cleanup') {
+        stage('Cleanup Artifacts') {
             steps {
                 script {
                     def services = [
@@ -216,18 +196,32 @@ pipeline {
                     ]
 
                     for (service in services) {
-                        sh "docker stop ${service}-dev"
-                        sh "docker rm ${service}-dev"
+                        sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
+                        sh "docker rmi danieldang/${service}:latest"
                     }
                 }
             }
         }
     }
-    
-    post {
-        // Clean after build
-        always {
-            cleanWs()
+
+    stage('Trigger CD Pipeline') {
+        steps {
+            script {
+                    sh "curl -v -k --user danielmaster:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-250-58-123.ap-southeast-1.compute.amazonaws.com:8080/job/thesis-report-management-cd/buildWithParameters?token=thesis-token'"
+                }
         }
     }
+    
+    post {
+       failure {
+             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
+                      subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
+                      mimeType: 'text/html',to: "huyngnht1305@gmail.com"
+      }
+      success {
+            emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
+                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
+                     mimeType: 'text/html',to: "huyngnht1305@gmail.com"
+      }      
+   }
 }
