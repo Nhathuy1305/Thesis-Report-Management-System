@@ -87,11 +87,17 @@ pipeline {
                     ]
 
                     for (service in services) {
-                        // Build and push Docker image for each service
-                        docker.build("daniel135dang/${service}", "./${service}")
+                        def imageName = "daniel135dang/${service}"
+
+                        def builtImage = docker.build(imageName, "./${service}")
+
                         withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
-                            docker.image("daniel135dang/${service}:${IMAGE_TAG}").push()
-                            docker.image("daniel135dang/${service}:latest").push()
+                            builtImage.tag("${IMAGE_TAG}")
+
+                            docker.image("${imageName}:${IMAGE_TAG}").push()
+
+                            builtImage.tag("latest")
+                            docker.image("${imageName}:latest").push()
                         }
                     }
                 }
