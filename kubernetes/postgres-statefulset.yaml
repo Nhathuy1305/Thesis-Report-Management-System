@@ -21,7 +21,7 @@ spec:
           ports:
             - containerPort: 5432
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
+            - mountPath: /var/lib/postgresql/data/pgdata
               name: postgres-data
           env:
             - name: POSTGRES_DB
@@ -41,6 +41,9 @@ spec:
                 configMapKeyRef:
                   name: services-config
                   key: POSTGRES_PASSWORD
+
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
 
   volumeClaimTemplates:
     - metadata:
