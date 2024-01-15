@@ -24,12 +24,9 @@ spec:
           command: ["postgres", "-c", "config_file=/etc/postgresql.conf"]
           ports:
             - containerPort: 5432
-          volumeMounts:
-            - name: postgres-config
-              mountPath: /etc/postgresql.conf
-              subPath: postgresql.conf
-            - name: postgres-data
-              mountPath: /var/lib/postgresql/data
+          volumes:
+            - ./postgresql.conf:/etc/postgresql.conf
+            - ./pg-data:/var/lib/postgresql/data
           env:
             - name: POSTGRES_DB
               valueFrom:
