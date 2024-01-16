@@ -1,6 +1,6 @@
 pipeline {
 
-    agent {label 'Jenkins-Agent'}
+    // agent {label 'Jenkins-Agent'}
 
     environment {
         RELEASE_VERSION = '1.0.0'
@@ -203,7 +203,7 @@ pipeline {
 
                     for (service in services) {
                         sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
-                        sh "docker rmi danieldang/${service}:latest"
+                        sh "docker rmi daniel135dang/${service}:latest"
                     }
                 }
             }
