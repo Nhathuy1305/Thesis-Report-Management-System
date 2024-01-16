@@ -28,7 +28,7 @@ pipeline {
                         'table_of_content',
                         'word_frequency',
                         'citation',
-                        // 'table_figure_detection',
+                        'table_figure_detection',
                     ]
 
                     for (service in services) {
@@ -56,7 +56,7 @@ pipeline {
                         'table_of_content',
                         'word_frequency',
                         'citation',
-                        // 'table_figure_detection',
+                        'table_figure_detection',
                     ]
 
                     for (service in services) {

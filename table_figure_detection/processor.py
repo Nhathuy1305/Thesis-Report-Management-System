@@ -173,7 +173,7 @@ def output_file(cloud_file_location):
             if mentions:
                 mentioned_items += 1
             _, slide = mentions[-1] if mentions else (None, None)
-            output += (f"{table} \nMentioned on slide {slide}\n\n")
+            output += (f"{table} \nMentioned on page {slide}\n\n")
 
         if total_items == 0:
             grade = 0

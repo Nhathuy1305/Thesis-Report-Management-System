@@ -24,7 +24,7 @@ def check_grammar(uploaded_file_location):
                 
         matches = tool.check(full_text)
         
-        return matches
+        return matches, full_text
     
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -71,10 +71,23 @@ def output_file(cloud_file_location):
 
     uploaded_file_location = get_file_from_bucket(cloud_file_location)
     producer.publish_status(event_id, thesis_id, service_type, "Processing")
-
+    output = ""
+    
     try:
+        matches, full_text = check_grammar(uploaded_file_location)
         
-        grade = 0
+        total_words = len(full_text.split())
+        
+        words_with_issues = 0
+        for match in matches:
+            words_with_issues += len(match.context.split())
+            output += f"Context: {match.context}\n"
+            output += f"Category: {match.category}\n"
+            output += f"Suggested correction: {match.replacements}\n"
+            output += "\n"
+        
+        words_without_issues = total_words - words_with_issues
+        grade = (int)(round(words_without_issues / total_words * 100)) if total_words != 0 else 100
         result = "Pass" if grade > 50 else "Fail"
         output += "Percentage: " + str(grade) + "%\n"
         output += "Service result: " + result + "\n"
