@@ -165,7 +165,7 @@ def output_file(cloud_file_location):
             if mentions:
                 mentioned_items += 1
             _, slide = mentions[-1] if mentions else (None, None)
-            output += (f"{figure} \nMentioned on slide {slide}\n\n")
+            output += (f"{figure} \nMentioned on page {slide}\n\n")
 
         output += "\nFigures mentioned:\n\n"
 

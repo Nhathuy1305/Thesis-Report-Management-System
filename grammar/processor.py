@@ -29,25 +29,7 @@ def check_grammar(uploaded_file_location):
     except Exception as e:
         print(f"An error occurred: {e}")
         return []
-    
 
-def process_printable_text(uploaded_file_location):
-    matches = check_grammar(uploaded_file_location)
-
-    # Iterate over the matches and print out the details
-    for match in matches:
-        print(f"Rule ID: {match.ruleId}")
-        print(f"Message: {match.message}")
-        print(f"Replacements: {', '.join(match.replacements)}")
-        print(f"Offset in Context: {match.offsetInContext}")
-        print(f"Context: {match.context}")
-        print(f"Offset: {match.offset}")
-        print(f"Error Length: {match.errorLength}")
-        print(f"Category: {match.category}")
-        print(f"Rule Issue Type: {match.ruleIssueType}")
-        print(f"Sentence: {match.sentence}")
-        print("\n")
-        
 
 def insert_database(event_id, thesis_id, file_location, result):
     file_name = os.path.basename(file_location)
