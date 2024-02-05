@@ -1,7 +1,6 @@
-FROM postgres:latest
+FROM postgres:alpine
 
-RUN apt-get update
-RUN apt-get install -y curl
+RUN apk --no-cache add curl
 
 COPY init.sql /docker-entrypoint-initdb.d/init.sql
 

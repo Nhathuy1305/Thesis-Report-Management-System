@@ -178,7 +178,7 @@ def output_file(cloud_file_location):
 
         print("finished uploading to bucket for " + os.environ.get("APP_NAME"), flush=True)
 
-        # remove_file_from_dir(uploaded_file_location)
+        remove_file_from_dir(uploaded_file_location)
         
         insert_database(event_id, thesis_id, output_file_location, result)
 

@@ -1,7 +1,7 @@
 pika
 sumy
 numpy
-psycopg2
+psycopg2-binary==2.9.1
 pdfplumber
 python-dotenv
 google-cloud-storage
