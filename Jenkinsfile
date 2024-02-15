@@ -30,11 +30,14 @@ pipeline {
         stage("Sonarqube Analysis") {
             steps {
                 withSonarQubeEnv('SonarQube-Server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
-                    -Dsonar.projectKey=Thesis-Report-Management-CI'''
+                    sh """
+                    ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
+                    -Dsonar.projectKey=Thesis-Report-Management-CI
+                    """
                 }
             }
         }
+
 
         stage("Quality Gate") {
             steps {
