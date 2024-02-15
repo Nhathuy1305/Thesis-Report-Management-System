@@ -180,7 +180,7 @@ INSERT INTO public.user_type(id, type_name) VALUES (1, 'Admin');
 INSERT INTO public.user_type(id, type_name) VALUES (2, 'Instructor');
 INSERT INTO public.user_type(id, type_name) VALUES (3, 'Student');
 
-INSERT INTO public.deadline (deadline) VALUES ('2024-01-30 00:00:00+07');
+INSERT INTO public.deadline (deadline) VALUES ('2024-05-30 00:00:00+07');
 
 INSERT INTO public.user (id, full_name, password, type_id) VALUES ('ITITADMIN01', 'Admin', '@IU_Ad#20/24', 1);
 

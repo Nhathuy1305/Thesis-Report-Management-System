@@ -1,17 +1,16 @@
 pipeline {
 
-    // agent {label 'Jenkins-Agent'}
+    agent any
+
+    tools {
+        jdk 'jdk17'
+        nodejs 'node21'
+    }
 
     environment {
-        RELEASE_VERSION = '1.0.0'
+        RELEASE = '1.0.0'
+        SCANNER_HOME = tool 'sonar-scanner'
         IMAGE_TAG = "${RELEASE_VERSION}-${env.BUILD_NUMBER}"
-        RABBITMQ_HOST = 'daniel-rabbitmq'
-        RABBITMQ_USER = 'guest'
-        RABBITMQ_PASSWORD = credentials('rabbitmq-password')
-        POSTGRES_USER = 'postgres'
-        POSTGRES_PASSWORD = credentials('postgres-password')
-        POSTGRES_DB = 'thesis_upload'
-        JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
     }
 
     stages {
@@ -25,6 +24,23 @@ pipeline {
         stage('Checkout from SCM') {
             steps {
                 git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System'
+            }
+        }
+
+        stage("Sonarqube Analysis") {
+            steps {
+                withSonarQubeEnv('SonarQube-Server') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
+                    -Dsonar.projectKey=Thesis-Report-Management-CI'''
+                }
+            }
+        }
+
+        stage("Quality Gate") {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token'
+                }
             }
         }
 
@@ -125,17 +141,17 @@ pipeline {
         }
     }
     
-}
+    // post {
+    //     failure {
+    //             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
+    //                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
+    //                     mimeType: 'text/html',to: "huyngnht1305@gmail.com"
+    //     }
+    //     success {
+    //             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
+    //                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
+    //                     mimeType: 'text/html',to: "huyngnht1305@gmail.com"
+    //     }      
+    // }
 
-post {
-       failure {
-             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
-                      subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
-                      mimeType: 'text/html',to: "huyngnht1305@gmail.com"
-      }
-      success {
-            emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
-                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
-                     mimeType: 'text/html',to: "huyngnht1305@gmail.com"
-      }      
 }
