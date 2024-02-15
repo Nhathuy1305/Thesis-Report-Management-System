@@ -132,26 +132,24 @@ pipeline {
             }
         }
 
-        stage('Trigger CD Pipeline') {
-            steps {
-                script {
-                        sh "curl -v -k --user danielmaster:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-250-58-123.ap-southeast-1.compute.amazonaws.com:8080/job/thesis-report-management-cd/buildWithParameters?token=thesis-token'"
-                }
-            }
-        }
+        // stage('Trigger CD Pipeline') {
+        //     steps {
+        //         script {
+        //                 sh "curl -v -k --user danielmaster:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-250-58-123.ap-southeast-1.compute.amazonaws.com:8080/job/thesis-report-management-cd/buildWithParameters?token=thesis-token'"
+        //         }
+        //     }
+        // }
     }
     
-    // post {
-    //     failure {
-    //             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
-    //                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
-    //                     mimeType: 'text/html',to: "huyngnht1305@gmail.com"
-    //     }
-    //     success {
-    //             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
-    //                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
-    //                     mimeType: 'text/html',to: "huyngnht1305@gmail.com"
-    //     }      
-    // }
+    post {
+        always {
+           emailext attachLog: true,
+               subject: "'${currentBuild.result}'",
+               body: "Project: ${env.JOB_NAME}<br/>" +
+                   "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                   "URL: ${env.BUILD_URL}<br/>",
+               to: 'dnhuy.ityu@gmail.com',                              
+               attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
 
 }
