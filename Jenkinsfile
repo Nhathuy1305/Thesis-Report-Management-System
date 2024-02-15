@@ -117,14 +117,7 @@ pipeline {
                         'chapter_summarization',
                         'chapter_title',
                         'client',
-                        'format_check',stage("Sonarqube Analysis") {
-            steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
-                    -Dsonar.projectKey=Thesis-Report-Management-CI'''
-                }
-            }
-        }
+                        'format_check',
                         'page_count',
                         'table_of_content',
                         'word_frequency',
