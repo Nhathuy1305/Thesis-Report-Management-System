@@ -8,7 +8,7 @@ pipeline {
     }
 
     environment {
-        RELEASE = '1.0.0'
+        RELEASE_VERSION = '1.0.0'
         SCANNER_HOME = tool 'sonar-scanner'
         IMAGE_TAG = "${RELEASE_VERSION}-${env.BUILD_NUMBER}"
     }
@@ -37,7 +37,6 @@ pipeline {
                 }
             }
         }
-
 
         stage("Quality Gate") {
             steps {
@@ -118,7 +117,14 @@ pipeline {
                         'chapter_summarization',
                         'chapter_title',
                         'client',
-                        'format_check',
+                        'format_check',stage("Sonarqube Analysis") {
+            steps {
+                withSonarQubeEnv('SonarQube-Server') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
+                    -Dsonar.projectKey=Thesis-Report-Management-CI'''
+                }
+            }
+        }
                         'page_count',
                         'table_of_content',
                         'word_frequency',
