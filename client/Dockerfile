@@ -4,8 +4,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-ARG REACT_APP_BACKEND_HOST
-ENV REACT_APP_BACKEND_HOST=$REACT_APP_BACKEND_HOST
 RUN npm run build
 
 FROM nginx:stable-alpine
