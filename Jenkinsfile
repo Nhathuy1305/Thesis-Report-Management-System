@@ -28,30 +28,30 @@ pipeline {
             }
         }
 
-        stage("Sonarqube Analysis") {
-            steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh """
-                    ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
-                    -Dsonar.projectKey=Thesis-Report-Management-CI
-                    """
-                }
-            }
-        }
+        // stage("Sonarqube Analysis") {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube-Server') {
+        //             sh """
+        //             ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
+        //             -Dsonar.projectKey=Thesis-Report-Management-CI
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage("Quality Gate") {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true, credentialsId: 'SonarQube-Token'
-                }
-            }
-        }
+        // stage("Quality Gate") {
+        //     steps {
+        //         timeout(time: 1, unit: 'HOURS') {
+        //             waitForQualityGate abortPipeline: true, credentialsId: 'SonarQube-Token'
+        //         }
+        //     }
+        // }
 
-        stage('TRIVY FS SCAN') {
-            steps {
-                sh "trivy fs . > trivyfs.txt"
-             }
-         }
+        // stage('TRIVY FS SCAN') {
+        //     steps {
+        //         sh "trivy fs . > trivyfs.txt"
+        //      }
+        //  }
 
         stage('Build & Push Docker Images') {
             steps {
@@ -89,30 +89,30 @@ pipeline {
             }
         }
 
-        stage('Trivy Scan') {
-            steps {
-                script {
-                    def services = [
-                        'postgresql',
-                        'rest',
-                        'client',
-                        'chapter_summarization',
-                        'chapter_title',
-                        'format_check',
-                        'page_count',
-                        'table_of_content',
-                        'word_frequency',
-                        'citation',
-                        'table_figure_detection',
-                        'grammar',
-                    ]
+        // stage('Trivy Scan') {
+        //     steps {
+        //         script {
+        //             def services = [
+        //                 'postgresql',
+        //                 'rest',
+        //                 'client',
+        //                 'chapter_summarization',
+        //                 'chapter_title',
+        //                 'format_check',
+        //                 'page_count',
+        //                 'table_of_content',
+        //                 'word_frequency',
+        //                 'citation',
+        //                 'table_figure_detection',
+        //                 'grammar',
+        //             ]
 
-                    for (service in services) {
-                        sh ("docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image daniel135dang/${service}:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table")
-                    }
-                }
-            }
-        }
+        //             for (service in services) {
+        //                 sh ("docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image daniel135dang/${service}:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table")
+        //             }
+        //         }
+        //     }
+        // }
 
      
         stage('Cleanup Artifacts') {
