@@ -57,10 +57,10 @@ pipeline {
             steps {
                 script {
                     // Get a list of all directories in the current workspace
-                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+                    def output = sh(script: "find . -maxdepth 1 -type d | sed 's|./||'", returnStdout: true).trim()
                     
                     // Split the output into a list of directories
-                    def services = output.split("\n").collect { it.replace("./", "") }
+                    def services = output.split("\n")
 
                     // List of directories to exclude
                     def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
