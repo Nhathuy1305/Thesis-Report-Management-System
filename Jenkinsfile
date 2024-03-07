@@ -63,20 +63,7 @@ pipeline {
                     def services = output.split("\n").collect { it.replace("./", "") }
 
                     // List of directories to exclude
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
-
-                    def validDirectories = services.findAll { dir ->
-                        // Check if the directory is not in the exclude list and conforms to naming pattern
-                        !excludeServices.contains(dir) && dir =~ /^[a-zA-Z0-9]+((\.|_|__|-+)[a-zA-Z0-9]+)*$/
-                    }
-
-                    def invalidDirectories = services.findAll { dir ->
-                        // Check if the directory is in the exclude list or does not conform to naming pattern
-                        excludeServices.contains(dir) || !(dir =~ /^[a-zA-Z0-9]+((\.|_|__|-+)[a-zA-Z0-9]+)*$/)
-                    }
-
-                    println "Valid Directories: $validDirectories"
-                    println "Invalid Directories: $invalidDirectories"
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
                     for (service in services) {
 
@@ -109,7 +96,7 @@ pipeline {
                     
                     def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
                     for (service in services) {
                         if (excludeServices.contains(service)) {
@@ -140,7 +127,7 @@ pipeline {
                     
                     def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
                     for (service in services) {
                         if (excludeServices.contains(service)) {
@@ -165,7 +152,7 @@ pipeline {
                     
                     def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
                     sh "echo '' > services.txt"
 
