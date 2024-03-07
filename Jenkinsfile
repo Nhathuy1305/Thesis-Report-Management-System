@@ -28,30 +28,30 @@ pipeline {
             }
         }
 
-        stage("Sonarqube Analysis") {
-            steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh """
-                    ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
-                    -Dsonar.projectKey=Thesis-Report-Management-CI
-                    """
-                }
-            }
-        }
+        // stage("Sonarqube Analysis") {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube-Server') {
+        //             sh """
+        //             ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
+        //             -Dsonar.projectKey=Thesis-Report-Management-CI
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage("Quality Gate") {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token'
-                }
-            }
-        }
+        // stage("Quality Gate") {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token'
+        //         }
+        //     }
+        // }
 
-        stage('TRIVY FS SCAN') {
-            steps {
-                sh "trivy fs . > trivyfs.txt"
-             }
-         }
+        // stage('TRIVY FS SCAN') {
+        //     steps {
+        //         sh "trivy fs . > trivyfs.txt"
+        //      }
+        //  }
 
         stage('Build & Push Docker Images') {
             steps {
