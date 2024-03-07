@@ -11,7 +11,7 @@ pipeline {
         RELEASE_VERSION = '1.0.0'
         SCANNER_HOME = tool 'sonar-scanner'
         IMAGE_TAG = "${RELEASE_VERSION}-${env.BUILD_NUMBER}"
-        // JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
+        JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
     }
 
     stages {
@@ -144,7 +144,9 @@ pipeline {
         stage('Update CD Repository') {
             steps {
                 script {
-                    sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git cd-job"
+                    withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                        sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git cd-job"
+                    }
 
                     sh "cd cd-job"
 
@@ -177,19 +179,19 @@ pipeline {
             }
         }
 
-        // stage('Trigger CD Pipeline') {
-        //     steps {
-        //         script {
-        //             sh """
-        //                 curl -v -k --user danielmaster:${JENKINS_API_TOKEN} \
-        //                 -X POST -H 'cache-control: no-cache' \
-        //                 -H 'content-type: application/x-www-form-urlencoded' \
-        //                 --data 'IMAGE_TAG=${IMAGE_TAG}' \
-        //                 'ec2-18-143-159-250.ap-southeast-1.compute.amazonaws.com:8080/job/thesis-report-management-cd/buildWithParameters?token=gitops-token'
-        //             """                
-        //         }
-        //     }
-        // }
+        stage('Trigger CD Pipeline') {
+            steps {
+                script {
+                    sh """
+                        curl -v -k --user danielmaster:${JENKINS_API_TOKEN} \
+                        -X POST -H 'cache-control: no-cache' \
+                        -H 'content-type: application/x-www-form-urlencoded' \
+                        --data 'IMAGE_TAG=${IMAGE_TAG}' \
+                        'http://localhost:8080/job/thesis-report-management-cd/buildWithParameters?token=gitops-token'
+                    """                
+                }
+            }
+        }
     }
     
     post {
