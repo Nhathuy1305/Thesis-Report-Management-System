@@ -193,18 +193,20 @@ pipeline {
     }
     
     post {
-        always {
+    always {
+        node {
             script {
                 sh "rm -rf cd-job"
             }
-            
-            emailext attachLog: true,
-                subject: "'${currentBuild.result}'",
-                body: "Project: ${env.JOB_NAME}<br/>" +
-                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
-                    "URL: ${env.BUILD_URL}<br/>",
-                to: 'dnhuy.ityu@gmail.com',                              
-                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
         }
+        
+        emailext attachLog: true,
+            subject: "'${currentBuild.result}'",
+            body: "Project: ${env.JOB_NAME}<br/>" +
+                "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                "URL: ${env.BUILD_URL}<br/>",
+            to: 'dnhuy.ityu@gmail.com',                              
+            attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
     }
+}
 }
