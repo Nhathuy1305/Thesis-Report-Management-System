@@ -56,22 +56,22 @@ pipeline {
         stage('Build & Push Docker Images') {
             steps {
                 script {
-                    def services = [
-                        'postgresql',
-                        'rest',
-                        'client',
-                        'chapter_summarization',
-                        'chapter_title',
-                        'format_check',
-                        'page_count',
-                        'table_of_content',
-                        'word_frequency',
-                        'citation',
-                        'table_figure_detection',
-                        'grammar',
-                    ]
+                    // Get a list of all directories in the current workspace
+                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+                    
+                    // Split the output into a list of directories
+                    def services = output.split("\n").collect { it.replace("./", "") }
+
+                    // List of directories to exclude
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
 
                     for (service in services) {
+
+                        // Skip the current iteration if the service is in the exclude list
+                        if (excludeServices.contains(service)) {
+                            continue
+                        }
+                        
                         def imageName = "daniel135dang/${service}"
 
                         def builtImage = docker.build(imageName, "./${service}")
@@ -92,23 +92,28 @@ pipeline {
         stage('Trivy Scan') {
             steps {
                 script {
-                    def services = [
-                        'postgresql',
-                        'rest',
-                        'client',
-                        'chapter_summarization',
-                        'chapter_title',
-                        'format_check',
-                        'page_count',
-                        'table_of_content',
-                        'word_frequency',
-                        'citation',
-                        'table_figure_detection',
-                        'grammar',
-                    ]
+                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+                    
+                    def services = output.split("\n").collect { it.replace("./", "") }
+
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
 
                     for (service in services) {
-                        sh ("docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image daniel135dang/${service}:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table")
+                        if (excludeServices.contains(service)) {
+                            continue
+                        }
+
+                        sh ("""
+                            docker run \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy \
+                            image daniel135dang/${service}:${IMAGE_TAG} \
+                            --no-progress \
+                            --scanners vuln \
+                            --exit-code 0 \
+                            --severity HIGH,CRITICAL \
+                            --format table
+                        """)
                     }
                 }
             }
@@ -118,24 +123,55 @@ pipeline {
         stage('Cleanup Artifacts') {
             steps {
                 script {
-                    def services = [
-                        'postgresql',
-                        'rest',
-                        'chapter_summarization',
-                        'chapter_title',
-                        'client',
-                        'format_check',
-                        'page_count',
-                        'table_of_content',
-                        'word_frequency',
-                        'citation',
-                        'table_figure_detection',
-                        'grammar',
-                    ]
+                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+                    
+                    def services = output.split("\n").collect { it.replace("./", "") }
+
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
 
                     for (service in services) {
+                        if (excludeServices.contains(service)) {
+                            continue
+                        }
+                        
                         sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
                         sh "docker rmi daniel135dang/${service}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Update CD Repository') {
+            steps {
+                script {
+                    sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git cd-job"
+
+                    sh "cd cd-job"
+
+                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+                    
+                    def services = output.split("\n").collect { it.replace("./", "") }
+
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
+
+                    sh "echo '' > services.txt"
+
+                    for (service in services) {
+                        if (excludeServices.contains(service)) {
+                            continue
+                        }
+                        
+                        sh "echo '${service}' >> services.txt"
+                    }
+
+                    sh """
+                        git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
+                        git config --global user.name "Nhathuy1305"
+                        git add services.txt
+                        git commit -m "Update services.txt"
+                    """
+                    withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                        sh "git push https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git master"
                     }
                 }
             }
@@ -144,7 +180,13 @@ pipeline {
         stage('Trigger CD Pipeline') {
             steps {
                 script {
-                    sh "curl -v -k --user danielmaster:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-18-143-159-250.ap-southeast-1.compute.amazonaws.com:8080/job/thesis-report-management-cd/buildWithParameters?token=gitops-token'"
+                    sh """
+                        curl -v -k --user danielmaster:${JENKINS_API_TOKEN} \
+                        -X POST -H 'cache-control: no-cache' \
+                        -H 'content-type: application/x-www-form-urlencoded' \
+                        --data 'IMAGE_TAG=${IMAGE_TAG}' \
+                        'ec2-18-143-159-250.ap-southeast-1.compute.amazonaws.com:8080/job/thesis-report-management-cd/buildWithParameters?token=gitops-token'
+                    """                
                 }
             }
         }
@@ -152,13 +194,17 @@ pipeline {
     
     post {
         always {
-           emailext attachLog: true,
-               subject: "'${currentBuild.result}'",
-               body: "Project: ${env.JOB_NAME}<br/>" +
-                   "Build Number: ${env.BUILD_NUMBER}<br/>" +
-                   "URL: ${env.BUILD_URL}<br/>",
-               to: 'dnhuy.ityu@gmail.com',                              
-               attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+            script {
+                sh "rm -rf cd-job"
+            }
+            
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'dnhuy.ityu@gmail.com',                              
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
         }
     }
 }
