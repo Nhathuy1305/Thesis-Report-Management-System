@@ -70,7 +70,13 @@ pipeline {
                         !excludeServices.contains(dir) && dir =~ /^[a-zA-Z0-9]+((\.|_|__|-+)[a-zA-Z0-9]+)*$/
                     }
 
+                    def invalidDirectories = services.findAll { dir ->
+                        // Check if the directory is in the exclude list or does not conform to naming pattern
+                        excludeServices.contains(dir) || !(dir =~ /^[a-zA-Z0-9]+((\.|_|__|-+)[a-zA-Z0-9]+)*$/)
+                    }
+
                     println "Valid Directories: $validDirectories"
+                    println "Invalid Directories: $invalidDirectories"
 
                     for (service in services) {
 
