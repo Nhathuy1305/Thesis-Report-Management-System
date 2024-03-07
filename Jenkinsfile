@@ -57,13 +57,20 @@ pipeline {
             steps {
                 script {
                     // Get a list of all directories in the current workspace
-                    def output = sh(script: "find . -maxdepth 1 -type d | sed 's|./||'", returnStdout: true).trim()
+                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
                     // Split the output into a list of directories
-                    def services = output.split("\n")
+                    def services = output.split("\n").collect { it.replace("./", "") }
 
                     // List of directories to exclude
                     def excludeServices = ['rabbitmq', 'readme_images', 'requirements']
+
+                    def validDirectories = services.findAll { dir ->
+                        // Check if the directory is not in the exclude list and conforms to naming pattern
+                        !excludeServices.contains(dir) && dir =~ /^[a-zA-Z0-9]+((\.|_|__|-+)[a-zA-Z0-9]+)*$/
+                    }
+
+                    println "Valid Directories: $validDirectories"
 
                     for (service in services) {
 
