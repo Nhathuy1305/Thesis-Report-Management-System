@@ -194,7 +194,7 @@ pipeline {
     
     post {
         always {
-            node {
+            node('my-label') {
                 script {
                     sh "rm -rf cd-job"
                 }
