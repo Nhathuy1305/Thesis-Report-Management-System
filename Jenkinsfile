@@ -173,6 +173,7 @@ pipeline {
                         git commit -m "Update services.txt"
                     """
                     withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                        sh "git pull https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git master --rebase"
                         sh "git push https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git master"
                     }
                 }
