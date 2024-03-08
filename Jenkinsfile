@@ -150,6 +150,12 @@ pipeline {
 
                     sh "cd cd-job"
 
+                    sh "git checkout master"
+
+                    withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                        sh "git pull origin master"
+                    }
+
                     def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
                     def services = output.split("\n").collect { it.replace("./", "") }
@@ -173,7 +179,6 @@ pipeline {
                         git commit -m "Update services.txt"
                     """
                     withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                        sh "git pull https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git master --rebase"
                         sh "git push https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git master"
                     }
                 }
