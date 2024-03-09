@@ -149,7 +149,9 @@ pipeline {
                     }
 
                     dir("cd-job") {
-                        sh "git pull origin master"
+                        withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                            sh "git pull origin master"
+                        }
                     }
                     
                     def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
