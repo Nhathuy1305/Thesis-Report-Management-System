@@ -176,7 +176,7 @@ pipeline {
                         sh "git fetch origin master:tmp"
                         sh "git rebase tmp"
                         sh "git push origin HEAD:master"
-                        sh "git branch -D tmp
+                        sh "git branch -D tmp"
                     }
                 }
             }
