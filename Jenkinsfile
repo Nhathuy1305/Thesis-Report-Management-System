@@ -150,7 +150,10 @@ pipeline {
 
                     dir("cd-job") {
                         withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                            sh "git pull origin master"
+                            sh "git fetch origin master:tmp"
+                            sh "git rebase tmp"
+                            sh "git push origin HEAD:master"
+                            sh "git branch -D tmp"
                         }
                     }
                     
