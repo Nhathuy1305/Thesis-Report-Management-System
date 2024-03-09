@@ -148,14 +148,7 @@ pipeline {
                         sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git cd-job"
                     }
 
-                    dir("cd-job") {
-                        withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                            sh "git fetch origin master:tmp"
-                            sh "git rebase tmp"
-                            sh "git push origin HEAD:master"
-                            sh "git branch -D tmp"
-                        }
-                    }
+                    sh "cd cd-job"
                     
                     def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
@@ -180,7 +173,10 @@ pipeline {
                         git commit -m "Update services.txt"
                     """
                     withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                        sh "git push https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git master"
+                        sh "git fetch origin master:tmp"
+                        sh "git rebase tmp"
+                        sh "git push origin HEAD:master"
+                        sh "git branch -D tmp
                     }
                 }
             }
