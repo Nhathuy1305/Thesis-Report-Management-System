@@ -53,71 +53,71 @@ pipeline {
         //      }
         //  }
 
-        stage('Build & Push Docker Images') {
-            steps {
-                script {
-                    // Get a list of all directories in the current workspace
-                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+        // stage('Build & Push Docker Images') {
+        //     steps {
+        //         script {
+        //             // Get a list of all directories in the current workspace
+        //             def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
-                    // Split the output into a list of directories
-                    def services = output.split("\n").collect { it.replace("./", "") }
+        //             // Split the output into a list of directories
+        //             def services = output.split("\n").collect { it.replace("./", "") }
 
-                    // List of directories to exclude
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
+        //             // List of directories to exclude
+        //             def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
-                    for (service in services) {
+        //             for (service in services) {
 
-                        // Skip the current iteration if the service is in the exclude list
-                        if (excludeServices.contains(service)) {
-                            continue
-                        }
+        //                 // Skip the current iteration if the service is in the exclude list
+        //                 if (excludeServices.contains(service)) {
+        //                     continue
+        //                 }
                         
-                        def imageName = "daniel135dang/${service}"
+        //                 def imageName = "daniel135dang/${service}"
 
-                        def builtImage = docker.build(imageName, "./${service}")
+        //                 def builtImage = docker.build(imageName, "./${service}")
 
-                        withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
-                            builtImage.tag("${IMAGE_TAG}")
+        //                 withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
+        //                     builtImage.tag("${IMAGE_TAG}")
 
-                            docker.image("${imageName}:${IMAGE_TAG}").push()
+        //                     docker.image("${imageName}:${IMAGE_TAG}").push()
 
-                            builtImage.tag("latest")
-                            docker.image("${imageName}:latest").push()
-                        }
-                    }
-                }
-            }
-        }
+        //                     builtImage.tag("latest")
+        //                     docker.image("${imageName}:latest").push()
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Trivy Scan') {
-            steps {
-                script {
-                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+        // stage('Trivy Scan') {
+        //     steps {
+        //         script {
+        //             def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
-                    def services = output.split("\n").collect { it.replace("./", "") }
+        //             def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
+        //             def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
-                    for (service in services) {
-                        if (excludeServices.contains(service)) {
-                            continue
-                        }
+        //             for (service in services) {
+        //                 if (excludeServices.contains(service)) {
+        //                     continue
+        //                 }
 
-                        sh ("""
-                            docker run \
-                            -v /var/run/docker.sock:/var/run/docker.sock \
-                            aquasec/trivy \
-                            image daniel135dang/${service}:${IMAGE_TAG} \
-                            --no-progress \
-                            --scanners vuln \
-                            --exit-code 0 \
-                            --severity HIGH,CRITICAL \
-                            --format table
-                        """)
-                    }
-                }
-            }
-        }
+        //                 sh ("""
+        //                     docker run \
+        //                     -v /var/run/docker.sock:/var/run/docker.sock \
+        //                     aquasec/trivy \
+        //                     image daniel135dang/${service}:${IMAGE_TAG} \
+        //                     --no-progress \
+        //                     --scanners vuln \
+        //                     --exit-code 0 \
+        //                     --severity HIGH,CRITICAL \
+        //                     --format table
+        //                 """)
+        //             }
+        //         }
+        //     }
+        // }
 
      
         stage('Cleanup Artifacts') {
@@ -148,14 +148,10 @@ pipeline {
                         sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git cd-job"
                     }
 
-                    sh "cd cd-job"
-
-                    sh "git checkout master"
-
-                    withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                    dir("cd-job") {
                         sh "git pull origin master"
                     }
-
+                    
                     def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
                     def services = output.split("\n").collect { it.replace("./", "") }
