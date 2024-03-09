@@ -120,26 +120,26 @@ pipeline {
         // }
 
      
-        stage('Cleanup Artifacts') {
-            steps {
-                script {
-                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+        // stage('Cleanup Artifacts') {
+        //     steps {
+        //         script {
+        //             def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
-                    def services = output.split("\n").collect { it.replace("./", "") }
+        //             def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
+        //             def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
-                    for (service in services) {
-                        if (excludeServices.contains(service)) {
-                            continue
-                        }
+        //             for (service in services) {
+        //                 if (excludeServices.contains(service)) {
+        //                     continue
+        //                 }
                         
-                        sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
-                        sh "docker rmi daniel135dang/${service}:latest"
-                    }
-                }
-            }
-        }
+        //                 sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
+        //                 sh "docker rmi daniel135dang/${service}:latest"
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Update CD Repository') {
             steps {
