@@ -203,6 +203,7 @@ pipeline {
             node('') {
                 script {
                     sh "rm -rf cd-job"
+                    sh "rm -rf ci-job"
                 }
             }
             
