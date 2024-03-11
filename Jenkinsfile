@@ -145,38 +145,32 @@ pipeline {
             steps {
                 script {
                     withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                        sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD.git cd-job"
+                        sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD cd-job"
                     }
 
-                    sh "cd cd-job"
-                    
-                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
-                    
-                    def services = output.split("\n").collect { it.replace("./", "") }
-
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
-
-                    sh "echo '' > services.txt"
-
-                    for (service in services) {
-                        if (excludeServices.contains(service)) {
-                            continue
-                        }
+                    dir('cd-job') {
+                        def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                         
-                        sh "echo '${service}' >> services.txt"
-                    }
+                        def services = output.split("\n").collect { it.replace("./", "") }
 
-                    sh """
-                        git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
-                        git config --global user.name "Nhathuy1305"
-                        git add services.txt
-                        git commit -m "Update services.txt"
-                    """
-                    withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                        sh "git fetch origin master:tmp"
-                        sh "git rebase tmp"
-                        sh "git push origin HEAD:master"
-                        sh "git branch -D tmp"
+                        def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
+
+                        sh "echo '' > services.txt"
+
+                        for (service in services) {
+                            if (excludeServices.contains(service)) {
+                                continue
+                            }
+                            
+                            sh "echo '${service}' >> services.txt"
+                        }
+
+                        sh """
+                            git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
+                            git config --global user.name "Nhathuy1305"
+                            git add services.txt
+                            git commit -m "Update services.txt"
+                        """
                     }
                 }
             }
