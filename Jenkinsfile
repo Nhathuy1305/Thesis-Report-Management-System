@@ -151,16 +151,18 @@ pipeline {
                     def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
                     withCredentials([gitUsernamePassword(credentialsId: credentialsId, gitToolName: gitToolName)]) {
+                        // Clone CI repository and get list of services
                         sh "git clone ${ciRepo} ci-job"
                         def ciServicesOutput = sh(script: "find ci-job -maxdepth 1 -type d", returnStdout: true).trim()
-                        def ciServices = ciServicesOutput.split("\n").collect { it.replace("./ci-job/", "") }
+                        def ciServices = ciServicesOutput.split("\n").collect { it.replace("./ci-job/", "") }.findAll { !excludeServices.contains(it) }
 
+                        // Clone CD repository and get list of services from services.txt
                         sh "git clone ${cdRepo} cd-job"
                         def cdServices = readFile('cd-job/services.txt').split("\n")
 
                         // Compare the two lists of services
-                        def newServices = ciServices.findAll { !cdServices.contains(it) && !excludeServices.contains(it) }
-                        def removedServices = cdServices.findAll { !ciServices.contains(it) && !excludeServices.contains(it) }
+                        def newServices = ciServices.findAll { !cdServices.contains(it) }
+                        def removedServices = cdServices.findAll { !ciServices.contains(it) }
 
                         // If there are differences, update services.txt and commit the changes
                         if (newServices || removedServices) {
