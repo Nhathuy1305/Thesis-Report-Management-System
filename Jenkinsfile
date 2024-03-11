@@ -144,35 +144,40 @@ pipeline {
         stage('Update CD Repository') {
             steps {
                 script {
-                    withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                        sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD cd-job"
-                    }
-
-                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
-                        
-                    def services = output.split("\n").collect { it.replace("./", "") }
-
+                    def ciRepo = 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CI'
+                    def cdRepo = 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD'
+                    def credentialsId = 'github'
+                    def gitToolName = 'Default'
                     def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
-                    sh "echo '' > services.txt"
+                    withCredentials([gitUsernamePassword(credentialsId: credentialsId, gitToolName: gitToolName)]) {
+                        sh "git clone ${ciRepo} ci-job"
+                        def ciServicesOutput = sh(script: "find ci-job -maxdepth 1 -type d", returnStdout: true).trim()
+                        def ciServices = ciServicesOutput.split("\n").collect { it.replace("./ci-job/", "") }
 
-                    dir('cd-job') {
-                        
-                        for (service in services) {
-                            if (excludeServices.contains(service)) {
-                                continue
+                        sh "git clone ${cdRepo} cd-job"
+                        def cdServices = readFile('cd-job/services.txt').split("\n")
+
+                        // Compare the two lists of services
+                        def newServices = ciServices.findAll { !cdServices.contains(it) && !excludeServices.contains(it) }
+                        def removedServices = cdServices.findAll { !ciServices.contains(it) && !excludeServices.contains(it) }
+
+                        // If there are differences, update services.txt and commit the changes
+                        if (newServices || removedServices) {
+                            dir('cd-job') {
+                                newServices.each { sh "echo '${it}' >> services.txt" }
+                                removedServices.each { sh "sed -i '/${it}/d' services.txt" }
+
+                                sh """
+                                    git status
+                                    git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
+                                    git config --global user.name "Nhathuy1305"
+                                    git add services.txt
+                                    git commit -m "Update services.txt"
+                                    git push
+                                """
                             }
-                            
-                            sh "echo '${service}' >> services.txt"
                         }
-
-                        sh """
-                            git status
-                            git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
-                            git config --global user.name "Nhathuy1305"
-                            git add services.txt
-                            git commit -m "Update services.txt"
-                        """
                     }
                 }
             }
