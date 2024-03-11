@@ -166,6 +166,7 @@ pipeline {
                         }
 
                         sh """
+                            git status
                             git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
                             git config --global user.name "Nhathuy1305"
                             git add services.txt
