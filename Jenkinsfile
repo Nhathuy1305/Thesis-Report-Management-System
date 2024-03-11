@@ -148,15 +148,16 @@ pipeline {
                         sh "git clone https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD cd-job"
                     }
 
-                    dir('cd-job') {
-                        def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                         
-                        def services = output.split("\n").collect { it.replace("./", "") }
+                    def services = output.split("\n").collect { it.replace("./", "") }
 
-                        def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
 
-                        sh "echo '' > services.txt"
+                    sh "echo '' > services.txt"
 
+                    dir('cd-job') {
+                        
                         for (service in services) {
                             if (excludeServices.contains(service)) {
                                 continue
