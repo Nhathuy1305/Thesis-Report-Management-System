@@ -148,13 +148,13 @@ pipeline {
                     def cdRepo = 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD'
                     def credentialsId = 'github'
                     def gitToolName = 'Default'
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.idea', '.gitignore']
 
                     withCredentials([gitUsernamePassword(credentialsId: credentialsId, gitToolName: gitToolName)]) {
                         // Clone CI repository and get list of services
                         sh "git clone ${ciRepo} ci-job"
-                        def ciServicesOutput = sh(script: "find ci-job -maxdepth 1 -type d", returnStdout: true).trim()
-                        def ciServices = ciServicesOutput.split("\n").collect { it.replace("./ci-job/", "") }.findAll { !excludeServices.contains(it) }
+                        def ciServicesOutput = sh(script: "find ci-job/* -maxdepth 0 -type d", returnStdout: true).trim()
+                        def ciServices = ciServicesOutput.split("\n").collect { it.replace("ci-job/", "") }.findAll { !excludeServices.contains(it) }
 
                         // Clone CD repository and get list of services from services.txt
                         sh "git clone ${cdRepo} cd-job"
