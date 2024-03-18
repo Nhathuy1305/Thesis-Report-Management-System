@@ -148,7 +148,7 @@ pipeline {
                     def cdRepo = 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD'
                     def credentialsId = 'github'
                     def gitToolName = 'Default'
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.idea', '.gitignore']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.idea', '.gitignore', 'client', 'rest', 'postgresql']
 
                     withCredentials([gitUsernamePassword(credentialsId: credentialsId, gitToolName: gitToolName)]) {
                         sh "git clone ${ciRepo} ci-job"
