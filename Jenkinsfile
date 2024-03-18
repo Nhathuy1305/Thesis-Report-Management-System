@@ -156,7 +156,7 @@ pipeline {
                         def ciServices = ciServicesOutput.split("\n").collect { it.replace("ci-job/", "") }.findAll { !excludeServices.contains(it) }
 
                         sh "git clone ${cdRepo} cd-job"
-                        def cdServices = readFile('cd-job/services.txt').split("\n")
+                        def cdServices = readFile('cd-job/service_update/services.txt').split("\n")
 
                         // Compare the two lists of services
                         def newServices = ciServices.findAll { !cdServices.contains(it) }
@@ -164,7 +164,7 @@ pipeline {
 
                         // If there are differences, update services.txt and commit the changes
                         if (newServices || removedServices) {
-                            dir('cd-job') {
+                            dir('cd-job/service_update') {
                                 newServices.each { sh "echo '${it}' >> services.txt" }
                                 removedServices.each { sh "sed -i '/${it}/d' services.txt" }
 
