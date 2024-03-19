@@ -166,13 +166,16 @@ pipeline {
                         if (newServices || removedServices) {
                             dir('cd-job/service_update') {
                                 newServices.each { sh "echo '${it}' >> services.txt" }
-                                removedServices.each { sh "sed -i '/${it}/d' services.txt" }
+                                removedServices.each { 
+                                    sh "sed -i '/${it}/d' services.txt" 
+                                    sh "echo '${it}' >> service_removed.txt" // Write removed services to service_removed.txt
+                                }
 
                                 sh """
                                     git status
                                     git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
                                     git config --global user.name "Nhathuy1305"
-                                    git add services.txt
+                                    git add services.txt service_removed.txt
                                     git commit -m "Update services.txt"
                                     git push
                                 """
