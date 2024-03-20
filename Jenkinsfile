@@ -157,15 +157,21 @@ pipeline {
 
                         sh "git clone ${cdRepo} cd-job"
                         def cdServices = readFile('cd-job/service_update/services.txt').split("\n")
+                        def removedServicesList = readFile('cd-job/service_update/service_removed.txt').split("\n")
 
                         // Compare the two lists of services
                         def newServices = ciServices.findAll { !cdServices.contains(it) }
                         def removedServices = cdServices.findAll { !ciServices.contains(it) }
 
-                        // If there are differences, update services.txt and commit the changes
+                        // If there are differences, update services.txt and service_removed.txt, and commit the changes
                         if (newServices || removedServices) {
                             dir('cd-job/service_update') {
-                                newServices.each { sh "echo '${it}' >> services.txt" }
+                                newServices.each { 
+                                    sh "echo '${it}' >> services.txt" 
+                                    if (removedServicesList.contains(it)) {
+                                        sh "sed -i '/${it}/d' service_removed.txt" // Remove the service from service_removed.txt if it is added back
+                                    }
+                                }
                                 removedServices.each { 
                                     sh "sed -i '/${it}/d' services.txt" 
                                     sh "echo '${it}' >> service_removed.txt" // Write removed services to service_removed.txt
@@ -176,7 +182,7 @@ pipeline {
                                     git config --global user.email "ITITIU20043@student.hcmiu.edu.vn"
                                     git config --global user.name "Nhathuy1305"
                                     git add services.txt service_removed.txt
-                                    git commit -m "Update services.txt"
+                                    git commit -m "Update services.txt and service_removed.txt"
                                     git push
                                 """
                             }
