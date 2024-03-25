@@ -83,55 +83,55 @@ pipeline {
 
                             docker.image("${imageName}:${IMAGE_TAG}").push()
 
-                            builtImage.tag("latest")
-                            docker.image("${imageName}:latest").push()
+                            // builtImage.tag("latest")
+                            // docker.image("${imageName}:latest").push()
                         }
                     }
                 }
             }
         }
 
-        stage('Trivy Scan') {
-            steps {
-                script {
-                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+        // stage('Trivy Scan') {
+        //     steps {
+        //         script {
+        //             def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
-                    def services = output.split("\n").collect { it.replace("./", "") }
+        //             def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea', '.scannerwork']
+        //             def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea', '.scannerwork']
 
-                    for (service in services) {
-                        if (excludeServices.contains(service)) {
-                            continue
-                        }
+        //             for (service in services) {
+        //                 if (excludeServices.contains(service)) {
+        //                     continue
+        //                 }
 
-                        sh ("""
-                            docker run \
-                            -v /var/run/docker.sock:/var/run/docker.sock \
-                            aquasec/trivy \
-                            image daniel135dang/${service}:${IMAGE_TAG} \
-                            --no-progress \
-                            --scanners vuln \
-                            --exit-code 0 \
-                            --severity HIGH,CRITICAL \
-                            --format table
-                        """)
+        //                 sh ("""
+        //                     docker run \
+        //                     -v /var/run/docker.sock:/var/run/docker.sock \
+        //                     aquasec/trivy \
+        //                     image daniel135dang/${service}:${IMAGE_TAG} \
+        //                     --no-progress \
+        //                     --scanners vuln \
+        //                     --exit-code 0 \
+        //                     --severity HIGH,CRITICAL \
+        //                     --format table
+        //                 """)
 
-                        sh ("""
-                            docker run --rm \
-                            -v /var/run/docker.sock:/var/run/docker.sock \
-                            aquasec/trivy \
-                            image daniel135dang/${service}:${IMAGE_TAG} \
-                            --no-progress \
-                            --scanners vuln \
-                            --exit-code 0 \
-                            --severity HIGH,CRITICAL \
-                            --format table
-                        """)
-                    }
-                }
-            }
-        }
+        //                 sh ("""
+        //                     docker run --rm \
+        //                     -v /var/run/docker.sock:/var/run/docker.sock \
+        //                     aquasec/trivy \
+        //                     image daniel135dang/${service}:${IMAGE_TAG} \
+        //                     --no-progress \
+        //                     --scanners vuln \
+        //                     --exit-code 0 \
+        //                     --severity HIGH,CRITICAL \
+        //                     --format table
+        //                 """)
+        //             }
+        //         }
+        //     }
+        // }
 
      
         stage('Cleanup Artifacts') {
@@ -150,6 +150,12 @@ pipeline {
                         
                         sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
                         sh "docker rmi daniel135dang/${service}:latest"
+                    }
+
+                    def oldImages = sh(script: "docker images -q", returnStdout: true).trim().split("\n")
+
+                    oldImages.each { imageId ->
+                        sh "docker rmi -f ${imageId}"
                     }
                 }
             }
