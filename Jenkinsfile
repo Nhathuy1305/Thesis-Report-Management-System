@@ -63,7 +63,7 @@ pipeline {
                     def services = output.split("\n").collect { it.replace("./", "") }
 
                     // List of directories to exclude
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea']
 
                     for (service in services) {
 
