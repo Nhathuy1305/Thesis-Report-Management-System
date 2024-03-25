@@ -151,12 +151,6 @@ pipeline {
                         sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
                         sh "docker rmi daniel135dang/${service}:latest"
                     }
-
-                    def oldImages = sh(script: "docker images -q", returnStdout: true).trim().split("\n")
-
-                    oldImages.each { imageId ->
-                        sh "docker rmi -f ${imageId}"
-                    }
                 }
             }
         }
@@ -234,6 +228,19 @@ pipeline {
                 script {
                     sh "rm -rf cd-job"
                     sh "rm -rf ci-job"
+
+                    def oldImages = sh(script: "docker images -q", returnStdout: true).trim().split("\n")
+
+                    oldImages.each { imageId ->
+                        def containers = sh(script: "docker ps -a -q --filter ancestor=${imageId}", returnStdout: true).trim().split("\n")
+
+                        containers.each { containerId ->
+                            sh "docker stop ${containerId}"
+                            sh "docker rm ${containerId}"
+                        }
+
+                        sh "docker rmi -f ${imageId}"
+                    }
                 }
             }
             
