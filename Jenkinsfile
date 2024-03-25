@@ -71,6 +71,8 @@ pipeline {
                         if (excludeServices.contains(service)) {
                             continue
                         }
+
+                        echo "Processing service: ${service}"
                         
                         def imageName = "daniel135dang/${service}"
 
