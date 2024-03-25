@@ -63,7 +63,7 @@ pipeline {
                     def services = output.split("\n").collect { it.replace("./", "") }
 
                     // List of directories to exclude
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea', '.scannerwork']
 
                     for (service in services) {
 
@@ -98,7 +98,7 @@ pipeline {
                     
                     def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea', '.scannerwork']
 
                     for (service in services) {
                         if (excludeServices.contains(service)) {
@@ -141,7 +141,7 @@ pipeline {
                     
                     def services = output.split("\n").collect { it.replace("./", "") }
 
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea', '.scannerwork']
 
                     for (service in services) {
                         if (excludeServices.contains(service)) {
@@ -162,7 +162,7 @@ pipeline {
                     def cdRepo = 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CD'
                     def credentialsId = 'github'
                     def gitToolName = 'Default'
-                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.idea', '.gitignore', 'client', 'rest', 'postgresql']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.idea', '.scannerwork', '.gitignore', 'client', 'rest', 'postgresql']
 
                     withCredentials([gitUsernamePassword(credentialsId: credentialsId, gitToolName: gitToolName)]) {
                         sh "git clone ${ciRepo} ci-job"
