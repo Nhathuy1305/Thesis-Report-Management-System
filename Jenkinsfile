@@ -230,7 +230,7 @@ pipeline {
                     sh "rm -rf ci-job"
                     }
                 }
-            }
+            
             
             emailext attachLog: true,
                 subject: "'${currentBuild.result}'",
