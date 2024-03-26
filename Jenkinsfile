@@ -9,7 +9,7 @@ pipeline {
 
     environment {
         RELEASE_VERSION = '1.0.0'
-        SCANNER_HOME = tool 'sonar-scanner'
+        // SCANNER_HOME = tool 'sonar-scanner'
         IMAGE_TAG = "${RELEASE_VERSION}-${env.BUILD_NUMBER}"
         JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
     }
@@ -28,16 +28,16 @@ pipeline {
             }
         }
 
-        stage("Sonarqube Analysis") {
-            steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh """
-                    ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
-                    -Dsonar.projectKey=Thesis-Report-Management-CI
-                    """
-                }
-            }
-        }
+        // stage("Sonarqube Analysis") {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube-Server') {
+        //             sh """
+        //             ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=Thesis-Report-Management-CI \
+        //             -Dsonar.projectKey=Thesis-Report-Management-CI
+        //             """
+        //         }
+        //     }
+        // }
 
         // stage("Quality Gate") {
         //     steps {
@@ -47,11 +47,11 @@ pipeline {
         //     }
         // }
 
-        stage('TRIVY FS SCAN') {
-            steps {
-                sh "trivy fs . > trivyfs.txt"
-             }
-         }
+        // stage('TRIVY FS SCAN') {
+        //     steps {
+        //         sh "trivy fs . > trivyfs.txt"
+        //      }
+        //  }
 
         stage('Build & Push Docker Images') {
             steps {
@@ -149,7 +149,7 @@ pipeline {
                         }
                         
                         sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
-                        sh "docker rmi daniel135dang/${service}:latest"
+                        // sh "docker rmi daniel135dang/${service}:latest"
                     }
                 }
             }
@@ -228,18 +228,6 @@ pipeline {
                 script {
                     sh "rm -rf cd-job"
                     sh "rm -rf ci-job"
-
-                    def oldImages = sh(script: "docker images -q", returnStdout: true).trim().split("\n")
-
-                    oldImages.each { imageId ->
-                        def containers = sh(script: "docker ps -a -q --filter ancestor=${imageId}", returnStdout: true).trim().split("\n")
-
-                        containers.each { containerId ->
-                            sh "docker stop ${containerId}"
-                            sh "docker rm ${containerId}"
-                        }
-
-                        sh "docker rmi -f ${imageId}"
                     }
                 }
             }
