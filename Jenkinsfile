@@ -206,6 +206,7 @@ pipeline {
             }
         }
 
+        // todo
         // CHO NAY NHO THAY DOI USER KHI CHUYEN SANG CLOUD
         stage('Trigger CD Pipeline') {
             steps {
@@ -230,7 +231,6 @@ pipeline {
                     sh "rm -rf ci-job"
                     }
                 }
-            
             
             emailext attachLog: true,
                 subject: "'${currentBuild.result}'",
