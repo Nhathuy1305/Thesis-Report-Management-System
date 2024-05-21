@@ -11,7 +11,7 @@ pipeline {
         RELEASE_VERSION = '1.0.0'
         SCANNER_HOME = tool 'sonar-scanner'
         IMAGE_TAG = "${RELEASE_VERSION}-${env.BUILD_NUMBER}"
-        JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
+        // JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
     }
 
     stages {
