@@ -247,5 +247,5 @@ pipeline {
     //             to: 'dnhuy.ityu@gmail.com',                              
     //             attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
     //     }
-    // }
+    }
 }
