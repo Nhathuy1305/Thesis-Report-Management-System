@@ -24,7 +24,7 @@ pipeline {
 
         stage('Checkout from SCM') {
             steps {
-                git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System'
+                git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CI.git'
             }
         }
 
