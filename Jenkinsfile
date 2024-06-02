@@ -24,7 +24,7 @@ pipeline {
 
         stage('Checkout from SCM') {
             steps {
-                sh 'git config --global http.postBuffer 524288000'
+                // sh 'git config --global http.postBuffer 524288000'
                 git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CI.git'
             }
         }
@@ -211,11 +211,11 @@ pipeline {
             steps {
                 script {
                     sh """
-                        curl -v -k --user daniel:${JENKINS_API_TOKEN} \
+                        curl -v -k --user jenkinsadmin:${JENKINS_API_TOKEN} \
                         -X POST -H 'cache-control: no-cache' \
                         -H 'content-type: application/x-www-form-urlencoded' \
                         --data 'IMAGE_TAG=${IMAGE_TAG}' \
-                        'http://localhost:8080/job/app-cd/buildWithParameters?token=gitops-token'
+                        'http://192.168.100.105:8080/job/app-cd/buildWithParameters?token=gitops-token'
                     """                
                 }
             }
