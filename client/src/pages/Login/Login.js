@@ -30,9 +30,11 @@ const Login = () => {
                 password: password
             }
 
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "login", data, {
+            console.log(window.REACT_APP_BACKEND_HOST + "/login");
+
+            axios.post(window.REACT_APP_BACKEND_HOST + "/login", data, {
                 headers: {
-                    "Content_Type": "application/json"
+                    "Content-Type": "application/json"
                 }
             }).then(response => {
                 if (response.status === 200) {

@@ -15,7 +15,7 @@ const InstructorHomepage = () => {
             instructor_id: user.user_id
         }
 
-        axios.post(process.env.REACT_APP_BACKEND_HOST + "get-submissions", data, {
+        axios.post(window.REACT_APP_BACKEND_HOST + "/get-submissions", data, {
             headers: {
                 "Content-Type": "application/json"
             }

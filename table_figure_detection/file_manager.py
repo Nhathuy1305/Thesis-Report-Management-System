@@ -15,6 +15,8 @@ def get_file_from_bucket(file_name):
         content = blob.download_as_bytes()
 
         save_location = os.path.join("temp", os.path.basename(file_name))
+        
+        os.makedirs(os.path.dirname(save_location), exist_ok=True)
 
         with open(save_location, "wb") as file:
             file.write(content)

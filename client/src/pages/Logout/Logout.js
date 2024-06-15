@@ -8,7 +8,7 @@ const Logout = () => {
     const { logout } = useContext(AuthContext);
 
     useEffect(() => {
-        logout();
+        logout(`${window.REACT_APP_BACKEND_HOST}/logout`);
         navigate("/login");
     }, []);
 }

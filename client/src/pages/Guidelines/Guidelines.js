@@ -12,7 +12,7 @@ const Guidelines = () => {
     const [content, setContent] = useState("Select a category to view the guideline.");
 
     useEffect(() => {
-        axios.get(process.env.REACT_APP_BACKEND_HOST + "get-guidelines").then(response => {
+        axios.get(window.REACT_APP_BACKEND_HOST + "/get-guidelines").then(response => {
             setGuidelines(response.data);
         }).catch(error => {
             console.log(error);

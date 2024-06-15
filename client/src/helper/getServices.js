@@ -7,7 +7,7 @@ export const getName = (id) => {
 }
 
 const getServices = () => {
-    const services = process.env.REACT_APP_SERVICE_LIST.split(",");
+    const services = window.REACT_APP_SERVICE_LIST.split(",");
     const analytical = ["word_frequency", "chapter_summarization"];
     const finalServiceList = [];
 

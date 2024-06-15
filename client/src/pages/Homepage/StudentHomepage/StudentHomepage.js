@@ -38,7 +38,7 @@ const StudentHomepage = () => {
                 thesis_name: thesisTitle,
                 file: file
             }
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "upload-thesis", data, {
+            axios.post(window.REACT_APP_BACKEND_HOST + "/upload-thesis", data, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
@@ -60,7 +60,7 @@ const StudentHomepage = () => {
                 student_id: user.user_id
             }
     
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "get-student-info", data, {
+            axios.post(window.REACT_APP_BACKEND_HOST + "/get-student-info", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -77,7 +77,7 @@ const StudentHomepage = () => {
             const data = {
                 student_id: user.user_id
             }
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "get-all-submissions", data, {
+            axios.post(window.REACT_APP_BACKEND_HOST + "/get-all-submissions", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -94,7 +94,7 @@ const StudentHomepage = () => {
             student_id: user.user_id
         }
 
-        axios.post(process.env.REACT_APP_BACKEND_HOST + "get-instructor", data, {
+        axios.post(window.REACT_APP_BACKEND_HOST + "/get-instructor", data, {
             headers: {
                 "Content-Type": "application/json"
             }

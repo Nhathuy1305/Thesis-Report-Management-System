@@ -72,7 +72,7 @@ const Report = () => {
                 report_type: serviceId
             }
 
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "get-report", data, {
+            axios.post(window.REACT_APP_BACKEND_HOST + "/get-report", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -110,7 +110,7 @@ const Report = () => {
             thesis_id: id
         }
 
-        axios.post(process.env.REACT_APP_BACKEND_HOST + "download-file", data, {
+        axios.post(window.REACT_APP_BACKEND_HOST + "/download-file", data, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -135,7 +135,7 @@ const Report = () => {
             report_type: "full"
         }
 
-        axios.post(process.env.REACT_APP_BACKEND_HOST + "get-report", data, {
+        axios.post(window.REACT_APP_BACKEND_HOST + "/get-report", data, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -166,7 +166,7 @@ const Report = () => {
                 content: feedbackContent
             }
 
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "give-feedback", data, {
+            axios.post(window.REACT_APP_BACKEND_HOST + "/give-feedback", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -183,7 +183,7 @@ const Report = () => {
             thesis_id: id
         }
 
-        axios.post(process.env.REACT_APP_BACKEND_HOST + "get-feedback", data, {
+        axios.post(window.REACT_APP_BACKEND_HOST + "/get-feedback", data, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -199,7 +199,7 @@ const Report = () => {
             thesis_id: id
         }
 
-        axios.post(process.env.REACT_APP_BACKEND_HOST + "get-thesis-info", data, {
+        axios.post(window.REACT_APP_BACKEND_HOST + "/get-thesis-info", data, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -216,7 +216,7 @@ const Report = () => {
                 student_id: thesis.student_id
             }
     
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "get-all-submissions", data, {
+            axios.post(window.REACT_APP_BACKEND_HOST + "/get-all-submissions", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -239,7 +239,7 @@ const Report = () => {
         let interval;
 
         interval = setInterval(() => {
-            axios.post(process.env.REACT_APP_BACKEND_HOST + "poll-report", data, {
+            axios.post(window.REACT_APP_BACKEND_HOST + "/poll-report", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
