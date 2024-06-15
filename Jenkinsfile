@@ -108,8 +108,10 @@ pipeline {
                             continue
                         }
 
+                        // Perform Trivy scan
                         sh ("""
                             docker run \
+                            --name trivy-${service}-${BUILD_NUMBER} \
                             -v /var/run/docker.sock:/var/run/docker.sock \
                             aquasec/trivy \
                             image daniel135dang/${service}:${IMAGE_TAG} \
@@ -120,17 +122,9 @@ pipeline {
                             --format table
                         """)
 
-                        sh ("""
-                            docker run --rm \
-                            -v /var/run/docker.sock:/var/run/docker.sock \
-                            aquasec/trivy \
-                            image daniel135dang/${service}:${IMAGE_TAG} \
-                            --no-progress \
-                            --scanners vuln \
-                            --exit-code 0 \
-                            --severity HIGH,CRITICAL \
-                            --format table
-                        """)
+                        // Remove Trivy container and image after scanning
+                        sh "docker rm trivy-${service}-${BUILD_NUMBER}"
+                        sh "docker rmi aquasec/trivy"
                     }
                 }
             }
