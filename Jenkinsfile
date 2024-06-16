@@ -24,10 +24,8 @@ pipeline {
 
         stage('Checkout from SCM') {
             steps {
-                retry(3) {
-                    sh 'git config --global http.postBuffer 524288000'
-                    git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CI.git'
-                }
+                sh 'git config --global http.postBuffer 524288000'
+                git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nhathuy1305/Thesis-Report-Management-System-CI.git'
             }
         }
 
