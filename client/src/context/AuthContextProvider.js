@@ -33,7 +33,7 @@ const AuthContextProvider = ({ children }) => {
             setUser({user_id: localStorage.getItem("user_id"), user_type: localStorage.getItem("user_type")});
         }
 
-        axios.get(window.REACT_APP_BACKEND_HOST + "/get-deadline").then(response => {
+        axios.get(process.env.REACT_APP_BACKEND_HOST + "/get-deadline").then(response => {
             setDeadline(response.data);
         }).catch(error => {
             console.log(error);

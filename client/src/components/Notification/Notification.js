@@ -21,7 +21,7 @@ const Notification = () => {
                     }
                 }
 
-                axios.post(window.REACT_APP_BACKEND_HOST + "/view-notification", data, {
+                axios.post(process.env.REACT_APP_BACKEND_HOST + "/view-notification", data, {
                     headers: {
                         "Content-Type": "application/json"
                     }
@@ -44,7 +44,7 @@ const Notification = () => {
             user_id: user.user_id
         }
 
-        axios.post(window.REACT_APP_BACKEND_HOST + "/get-new-notifications", data, {
+        axios.post(process.env.REACT_APP_BACKEND_HOST + "/get-new-notifications", data, {
             headers: {
                 "Content-Type": "application/json"
             }

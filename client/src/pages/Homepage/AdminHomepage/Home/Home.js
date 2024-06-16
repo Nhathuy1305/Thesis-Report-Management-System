@@ -34,7 +34,7 @@ const Home = () => {
                 }
             }
 
-            axios.post(window.REACT_APP_BACKEND_HOST + "/send-notification", data, {
+            axios.post(process.env.REACT_APP_BACKEND_HOST + "/send-notification", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -52,7 +52,7 @@ const Home = () => {
             new_deadline: new Date()
         }
 
-        axios.post(window.REACT_APP_BACKEND_HOST + "/edit-deadline", data, {
+        axios.post(process.env.REACT_APP_BACKEND_HOST + "/edit-deadline", data, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -66,7 +66,7 @@ const Home = () => {
             new_deadline: new Date(newDeadline)
         }
 
-        axios.post(window.REACT_APP_BACKEND_HOST + "/edit-deadline", data, {
+        axios.post(process.env.REACT_APP_BACKEND_HOST + "/edit-deadline", data, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -79,7 +79,7 @@ const Home = () => {
     }
 
     useEffect(() => {
-        axios.get(window.REACT_APP_BACKEND_HOST + "/get-all-notifications").then(response => {
+        axios.get(process.env.REACT_APP_BACKEND_HOST + "/get-all-notifications").then(response => {
             setNotifications(response.data.reverse());
         }).catch(error => {
             console.log(error);

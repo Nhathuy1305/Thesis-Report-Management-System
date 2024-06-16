@@ -80,13 +80,7 @@ pipeline {
                         def builtImage = docker.build(imageName, "./${service}")
 
                         withDockerRegistry(credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/') {
-                            if (IMAGE_TAG == "latest") {
-                                echo "Skipping latest tag for service: ${service}"
-                                continue
-                            }
-
                             builtImage.tag("${IMAGE_TAG}")
-
                             docker.image("${imageName}:${IMAGE_TAG}").push()
                         }
                     }
@@ -146,7 +140,6 @@ pipeline {
                         }
                         
                         sh "docker rmi daniel135dang/${service}:${IMAGE_TAG}"
-                        // sh "docker rmi daniel135dang/${service}:latest"
                     }
                 }
             }

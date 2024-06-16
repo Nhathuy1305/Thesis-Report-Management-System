@@ -30,9 +30,9 @@ const Login = () => {
                 password: password
             }
 
-            console.log(window.REACT_APP_BACKEND_HOST + "/login");
+            console.log(process.env.REACT_APP_BACKEND_HOST + "/login");
 
-            axios.post(window.REACT_APP_BACKEND_HOST + "/login", data, {
+            axios.post(process.env.REACT_APP_BACKEND_HOST + "/login", data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
