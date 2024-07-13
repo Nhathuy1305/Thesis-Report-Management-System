@@ -103,12 +103,12 @@ def is_website_ieee_style(citation):
     return re.match(r".*\[\d+\].*(?:http|https)://.*", citation['raw_ref'][0])
 
 
-def insert_database(event_id, thesis_id, file_location, result):
+def insert_database(event_id, thesis_id, file_location, result, grade):
     file_name = os.path.basename(file_location)
     uploaded_time = datetime.utcnow()
 
     db = Database()
-    db.insert("INSERT INTO output (id, thesis_id, file_name, file_location, result, uploaded_time) VALUES (%s, %s, %s, %s, %s, %s)", (event_id, thesis_id, file_name, file_location, result, uploaded_time))
+    db.insert("INSERT INTO output (id, thesis_id, file_name, file_location, result, grade, uploaded_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (event_id, thesis_id, file_name, file_location, result, grade, uploaded_time))
 
     print("inserted in db", flush=True)
     
@@ -180,9 +180,9 @@ def output_file(cloud_file_location):
 
         remove_file_from_dir(uploaded_file_location)
         
-        insert_database(event_id, thesis_id, output_file_location, result)
+        insert_database(event_id, thesis_id, output_file_location, result, grade)
 
-        producer.publish_message(event_id, thesis_id, service_type, output_file_location, result)
+        producer.publish_message(event_id, thesis_id, service_type, output_file_location, result, grade)
 
         print("Processing complete in " + os.environ.get("APP_NAME"), flush=True)
     except Exception as e:

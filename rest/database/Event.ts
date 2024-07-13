@@ -31,6 +31,10 @@ const Event = db.sequelize.define("Event", {
     result: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    grade: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: "event"

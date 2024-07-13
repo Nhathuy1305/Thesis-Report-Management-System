@@ -40,7 +40,7 @@ export class Consumer {
                 Event.findOne({where: {id: payload["id"]}}).then(async event => {
                     if (event) {
                         if (payload["service_status"] !== "Service error") {
-                            event.update({service_status: payload["service_status"], output_location: payload["output_location"], result: payload["result"]});
+                            event.update({service_status: payload["service_status"], output_location: payload["output_location"], result: payload["result"], grade: payload["grade"]});
                         }
                         else {
                             event.update({status: payload["service_status"]});

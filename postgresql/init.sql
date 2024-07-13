@@ -8,6 +8,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -21,6 +22,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -34,6 +36,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -47,6 +50,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -60,6 +64,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -73,6 +78,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -86,6 +92,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -99,6 +106,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -112,6 +120,7 @@ CREATE TABLE public.output (
     file_name character varying(255) NOT NULL,
     file_location character varying(255) NOT NULL,
     result character varying(55),
+    grade character varying(55),
     uploaded_time timestamp with time zone NOT NULL
 );
 
@@ -152,7 +161,8 @@ CREATE TABLE public.event (
     service_type character varying(55) NOT NULL,
     output_location character varying(255),
     service_status character varying(55),
-    result character varying(55)
+    result character varying(55),
+    grade character varying(55)
 );
 CREATE TABLE public.deadline (
     id serial NOT NULL PRIMARY KEY,

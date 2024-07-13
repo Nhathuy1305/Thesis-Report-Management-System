@@ -17,7 +17,7 @@ const pollReport = async (req: Request, res: Response) => {
         const data: {[key: string]: any} = {};
 
         eventServices = events.map(event => event.dataValues);
-        eventServices = eventServices.map(({service_type, service_status, result}) => ({service_type, service_status, result}));
+        eventServices = eventServices.map(({service_type, service_status, result, grade}) => ({service_type, service_status, result, grade}));
 
         data.services = eventServices;
 

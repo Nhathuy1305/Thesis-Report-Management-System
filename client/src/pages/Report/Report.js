@@ -41,22 +41,35 @@ const Report = () => {
         const service = serviceResults.filter(service => service.service_type === serviceId)[0];
         const serviceStatus = service?.service_status;
         const result = service?.result ?? "";
+        const grade = service?.grade ?? 0;
 
         if (serviceStatus === "Processing") {
             return <Spinner />
         }
         else {
-            if (result === "Pass") {
-                return <img src={Pass} alt="Service passed" />
-            }
-            else if (result === "Fail") {
-                return <img src={Fail} style={{"width": "20px", "height": "20px"}} alt="Service failed" />
-            }
-            else if (result === "Service error") {
-                return <img src={Error} style={{"width": "30px", "height": "30px"}} alt="Service error" />
-            }
-            else if (result === "None") {
-                return ""
+            let style = {
+                width: "30px",
+                height: "30px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: "#10bc20",
+                borderRadius: "15px"
+            };
+
+            switch (result) {
+                case "Pass":
+                    return <div style={style}>{grade}%</div>;
+                case "Fail":
+                    return <img src={Fail} style={{"width": "20px", "height": "20px"}} alt="Service failed" />;
+                case "Service error":
+                    return <img src={Error} style={{"width": "30px", "height": "30px"}} alt="Service error" />;
+                case "None":
+                    return ""; // Nothing to render
+                default:
+                    return "";
             }
         }
 
