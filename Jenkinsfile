@@ -88,41 +88,41 @@ pipeline {
             }
         }
 
-        // stage('Trivy Scan') {
-        //     steps {
-        //         script {
-        //             def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
+        stage('Trivy Scan') {
+            steps {
+                script {
+                    def output = sh(script: "find . -maxdepth 1 -type d", returnStdout: true).trim()
                     
-        //             def services = output.split("\n").collect { it.replace("./", "") }
+                    def services = output.split("\n").collect { it.replace("./", "") }
 
-        //             def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea', '.scannerwork']
+                    def excludeServices = ['rabbitmq', 'readme_images', 'requirements', '.git', '.', '.idea', '.scannerwork']
 
-        //             for (service in services) {
-        //                 if (excludeServices.contains(service)) {
-        //                     continue
-        //                 }
+                    for (service in services) {
+                        if (excludeServices.contains(service)) {
+                            continue
+                        }
 
-        //                 // Perform Trivy scan
-        //                 sh ("""
-        //                     docker run \
-        //                     --name trivy-${service}-${BUILD_NUMBER} \
-        //                     -v /var/run/docker.sock:/var/run/docker.sock \
-        //                     aquasec/trivy \
-        //                     image daniel135dang/${service}:${IMAGE_TAG} \
-        //                     --no-progress \
-        //                     --scanners vuln \
-        //                     --exit-code 0 \
-        //                     --severity HIGH,CRITICAL \
-        //                     --format table
-        //                 """)
+                        // Perform Trivy scan
+                        sh ("""
+                            docker run \
+                            --name trivy-${service}-${BUILD_NUMBER} \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy \
+                            image daniel135dang/${service}:${IMAGE_TAG} \
+                            --no-progress \
+                            --scanners vuln \
+                            --exit-code 0 \
+                            --severity HIGH,CRITICAL \
+                            --format table
+                        """)
 
-        //                 // Remove Trivy container and image after scanning
-        //                 sh "docker rm trivy-${service}-${BUILD_NUMBER}"
-        //                 sh "docker rmi aquasec/trivy"
-        //             }
-        //         }
-        //     }
-        // }
+                        // Remove Trivy container and image after scanning
+                        sh "docker rm trivy-${service}-${BUILD_NUMBER}"
+                        sh "docker rmi aquasec/trivy"
+                    }
+                }
+            }
+        }
 
      
         stage('Cleanup Artifacts') {
