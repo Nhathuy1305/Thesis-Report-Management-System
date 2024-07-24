@@ -228,9 +228,25 @@ Admins can edit the deadline, access the list of student submissions, send notif
   <img src="readme_images/admin.png" alt="Admin UI">
 </p>
 
+<!-- EVALUATION -->
+
+## 5. Evaluation
+
+<p align="center">
+  <img src="readme_images/benchmark.png" alt="Benchmark Tesing">
+</p>
+The chart above illustrates the performance of the Kubernetes node across three different tests, comparing the total response time and throughput as the number of requests increases from 100 to 100,000. While the total time increases with the number of requests, the throughput also substantially rises, indicating the node's effective scaling and handling capabilities under varying loads.
+
+<br>
+
+<p align="center">
+  <img src="readme_images/grafana.png" alt="CPU">
+</p>
+I performed on all the Python services, precisely its upload functionality in this part. I sent ten reports from each user to the system. The CPU utilization of node 3 (worker 2) peaked at approximately 97.3%. The controller node was crucial in this scenario, facilitating data distribution between workers one and 2. This spike in CPU usage, depicted in the graph, reflects the system's response to the increased workload, underscoring the effectiveness of the controller node in managing and balancing the load between the worker nodes.
+
 <!-- FUTURE WORK -->
 
-## 5. Future Work
+## 6. Future Work
 The architecture used to develop this system allows for ease of updating, adding or removing services due to loose coupling. 
 
 New services can be added with the following steps. For example, a service that detects and checks figure captions: 
@@ -257,14 +273,14 @@ No figure caption...
 
 <!-- CONTACT -->
 
-## 6. Contact
+## 7. Contact
 
 - LinkedIn: https://www.linkedin.com/in/nhathuy1305
 - Email: dangnhathuy.work@gmail.com
 
 <!-- ACKNOWLEDEGMENT -->
 
-## 7. Acknowledgement
+## 8. Acknowledgement
 I would like to use this opportunity to thank Dr. Tran Thanh Tung from the bottom of my heart. His advice has been crucial throughout my thesis assignment. His insightful advice pushed me to develop my work in a much stronger direction, and I couldn't have done it without him.
 
 I also want to thank the School of Computer Science and Engineering at the International University. The fundamental information covered in the curriculum gives me the confidence to carry out this study. It has been a pleasant experience, and I was able to participate in the Computer Science program and learn from experienced lecturers.
