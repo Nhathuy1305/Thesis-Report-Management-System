@@ -3,9 +3,9 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-	<a href="https://blackboard.hcmiu.edu.vn/">
+	<a href="https://hcmiu.edu.vn/en">
 		<img 
-			src="https://blackboard.hcmiu.edu.vn/themes/test/images/iu_logo.png" 
+			src="readme_images/logoIU.png" 
 			alt="International University logo" 
 			width="100" 
 			height="100">
