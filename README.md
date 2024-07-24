@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-	<a href="https://hcmiu.edu.vn/en">
+	<a href="https://hcmiu.edu.vn/en" target="_blank">
 		<img 
 			src="readme_images/logoIU.png" 
 			alt="International University logo" 
@@ -109,12 +109,81 @@ cd file_path
 ```
 7. Run Docker compose command.
 ```sh
-docker compose up -d
+docker-compose up -d
 ```
+8. If you want to stop the program.
+```sh
+docker-compose down
+```
+
+<!-- ARCHITECTURE -->
+
+## 3. ARCHITECTURE
+
+Before we can begin any action, we must identify all of the system's needs and its architecture. These are alterations to the system's structure so that all the best solutions are performed in detail.
+
+#### 3.1. Use Case Diagram
+
+<p align="center">
+  <img src="readme_images/use_case.png" alt="Use Case Diagram">
+</p>
+The student and teacher, the derivatives of the actor, are some of the system's main characters. They have a few singular activities but can also be exchanged for others. 
+
+#### 3.2. Simplified System Architecture
+
+<p align="center">
+  <img src="readme_images/system-architect.gif" alt="Simplified System Architecture">
+</p>
+The client-side provides an interface for entering data and seeing results. A REST API that answers such queries sends and processes messages to the message broker. Messages are routed and forwarded to the analysis services via the message broker. To save and retrieve the results, these services and the REST API have access to the file system.
+
+#### 3.3. Simplified Event-driven Architecture
+
+<p align="center">
+  <img src="readme_images/eda.png" alt="Simplified Event-driven Architecture">
+</p>
+The system comprises RabbitMQ for event brokering, various services as event producers (e.g., Format Checking and Grammar Detection), and event consumers that process and validate theses, with PostgreSQL for secure data storage.
+
+#### 3.4. Event-driven Microservices Architecture
+
+<p align="center">
+  <img src="readme_images/EDA-micro.gif" alt="System Architecture">
+</p>
+The system uses RabbitMQ for message brokering, connecting modular services via a REST API built with Express.js, which handles client interactions and database integration for user data and metadata storage. Google Cloud Storage manages larger files, while RabbitMQ facilitates communication through fanout and direct exchanges, distributing tasks to various analysis services operating independently. Data flows from the REST API through RabbitMQ to analysis services, with outputs stored in Google Cloud Storage or returned to clients.
+
+#### 3.5. Database Design
+
+<p align="center">
+  <img src="readme_images/database.png" alt="Database Design">
+</p>
+Data management is crucial for any system, starting with a well-organized database to ensure speed and functionality. This system uses a relational database architecture to support complex queries, such as a teacher viewing all thesis submissions by students. There are two primary database structures: one for analytical services and one for the REST APIs (Express.js).
+
+#### 3.6. Git Workflow
+
+<p align="center">
+  <img src="readme_images/git.png" alt="Git Workflow">
+</p>
+The updates in Git trigger the automated build and push of container images to a registry. DevOps tooling synchronizes these updates with the Kubernetes cluster.
+
+#### 3.7. CI/CD Pipeline and Cluster Layers
+
+<p align="center">
+  <img src="readme_images/cicd.gif" alt="CI/CD Pipeline and Cluster Layers">
+</p>
+Continuous Integration (CI) and Continuous Deployment (CD) are managed using Jenkins, with ArgoCD automatically monitoring and deploying changes to the Kubernetes cluster. Prometheus and Grafana handle monitoring, providing real-time insights into the application's performance and health. Code quality is ensured through SonarQube during the CI process.
+
+#### 3.8. Kubernetes Cluster
+
+<p align="center">
+  <img src="readme_images/k8s-cluster.png" alt="Detail Kubernetes Cluster">
+</p>
+It is a system broken down into smaller components, each of which can act independently and has a specific role. Such an approach is modular, which means it can be developed, deployed, and scaled independently. This means we can change the service without changing the whole system.
+
+Docker containerization packages all dependencies, the runtime environment, and the code for each microservice. It ensures that each environment consistently executes the same way anywhere, making deployment and maintenance easier.
+
 
 <!-- USAGE EXAMPLES -->
 
-## 3. Usage
+## 4. Usage
 
 Access <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> on your browser. Sign in with any student ID, instructor ID or admin ID given in the <a>/postgresql/init.sql</a> file.
 
@@ -123,29 +192,45 @@ Examples:
 - Instructor ID: ITITEACH001
 - Admin ID: ITITADMIN01
 
-![Login](/readme_images/login.png)
+<p align="center">
+  <img src="readme_images/login.png" alt="Login">
+</p>
 
-Provide inputs to the thesis submission form. An example thesis <a>/Thesis.pdf</a> is provided for testing purposes.
+Provide inputs to the thesis submission form.
 
-![Submission Form](/readme_images/submission_form.png)
+<p align="center">
+  <img src="readme_images/submission_form.png" alt="Submission Form">
+</p>
 
 Select any service on the left-hand navigation area to view the evaluation.
-![Result](/readme_images/result.png)
-![Alt text](/readme_images/chart.png)
+<p align="center">
+  <img src="readme_images/result.png" alt="Result">
+</p>
+<p align="center">
+  <img src="readme_images/chart.png" alt="Chart">
+</p>
 
 Options to download the thesis document, services' results, viewing the guidelines and resubmission are available.
-![Alt text](/readme_images/options.png)
+<p align="center">
+  <img src="readme_images/options.png" alt="Options">
+</p>
 
 Instructors can view the thesis reports and evaluations of students they supervise and give manual feedback.
-![Alt text](/readme_images/student_submissions.png)
-![Alt text](/readme_images/manual_feedback.png)
+<p align="center">
+  <img src="readme_images/student_submissions.png" alt="Student Submissions">
+</p>
+<p align="center">
+  <img src="readme_images/manual_feedback.png" alt="Manual Feedback">
+</p>
 
 Admins can edit the deadline, access the list of student submissions, send notifications to students and instructors.
-![Alt text](/readme_images/admin.png)
-
+<p align="center">
+  <img src="readme_images/admin.png" alt="Admin UI">
+</p>
 
 <!-- FUTURE WORK -->
-## 4. Future Work
+
+## 5. Future Work
 The architecture used to develop this system allows for ease of updating, adding or removing services due to loose coupling. 
 
 New services can be added with the following steps. For example, a service that detects and checks figure captions: 
@@ -172,14 +257,14 @@ No figure caption...
 
 <!-- CONTACT -->
 
-## 5. Contact
+## 6. Contact
 
 - LinkedIn: https://www.linkedin.com/in/nhathuy1305
 - Email: dangnhathuy.work@gmail.com
 
 <!-- ACKNOWLEDEGMENT -->
 
-## 6. Acknowledgement
+## 7. Acknowledgement
 I would like to use this opportunity to thank Dr. Tran Thanh Tung from the bottom of my heart. His advice has been crucial throughout my thesis assignment. His insightful advice pushed me to develop my work in a much stronger direction, and I couldn't have done it without him.
 
 I also want to thank the School of Computer Science and Engineering at the International University. The fundamental information covered in the curriculum gives me the confidence to carry out this study. It has been a pleasant experience, and I was able to participate in the Computer Science program and learn from experienced lecturers.
