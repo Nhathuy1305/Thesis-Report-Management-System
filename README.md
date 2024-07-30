@@ -71,7 +71,7 @@ The primary tools that are used to develop this application are:
 The Open-source tools that are used to handle the CI/CD, Automation Test, Orchestration, Operating, Monitoring are:
 - Docker
 - Jenkins
-- Sonar
+- Sonarqube
 - Trivy
 - ArgoCD
 - Kubernetes
